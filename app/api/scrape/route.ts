@@ -106,7 +106,7 @@ function resolveUrl(src: string, baseUrl: string): string {
   }
 }
 
-function formatPrice(amount: string | number, currency = "USD"): string {
+function formatPrice(amount: string | number, currency = "AUD"): string {
   const num = parseFloat(String(amount));
   if (isNaN(num)) return String(amount);
   const sym = CURRENCY_SYMBOLS[currency] ?? currency + " ";

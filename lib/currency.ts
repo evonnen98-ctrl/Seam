@@ -63,24 +63,19 @@ export function itemPriceUSD(
 const PREF_KEY = "seam_currency";
 
 export function detectDefaultCurrency(): CurrencyCode {
-  if (typeof navigator === "undefined") return "USD";
-  const locale = navigator.language ?? "";
-  const region = locale.split("-")[1]?.toUpperCase() ?? "";
-  if (region === "AU") return "AUD";
-  if (region === "NZ") return "NZD";
-  if (region === "GB") return "GBP";
-  const eurRegions = ["DE","FR","IT","ES","NL","BE","AT","PT","IE","FI","LU","GR","SK","SI","EE","LV","LT","CY","MT"];
-  if (eurRegions.includes(region)) return "EUR";
-  return "USD";
+  return "AUD";
 }
 
 export function loadCurrencyPreference(): CurrencyCode {
-  if (typeof window === "undefined") return "USD";
+  if (typeof window === "undefined") return "AUD";
   const saved = localStorage.getItem(PREF_KEY);
+  if (saved === "GBP") {
+    localStorage.setItem(PREF_KEY, "AUD");
+    return "AUD";
+  }
   if (saved && CURRENCIES.some((c) => c.code === saved)) return saved as CurrencyCode;
-  const detected = detectDefaultCurrency();
-  localStorage.setItem(PREF_KEY, detected);
-  return detected;
+  localStorage.setItem(PREF_KEY, "AUD");
+  return "AUD";
 }
 
 export function saveCurrencyPreference(code: CurrencyCode): void {
