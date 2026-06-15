@@ -20,7 +20,6 @@ const PIN_CATEGORIES = ["Outerwear", "Tops", "Bottoms", "Accessories", "Shoes", 
 
 type Occasion   = typeof OCCASIONS[number];
 type Vibe       = typeof VIBES[number];
-type PinSource  = "all" | "wardrobe" | "wishlist";
 type PinCategory = typeof PIN_CATEGORIES[number] | "all";
 type TaggedItem = WardrobeItem & { source: "wardrobe" | "wishlist" };
 type View       = "home" | "outfit" | "buy";
@@ -110,7 +109,6 @@ export default function HomePage() {
   const [vibe,           setVibe]           = useState<Vibe | null>(null);
   const [pinnedIds,      setPinnedIds]      = useState<Set<string>>(new Set());
   const [pinsExpanded,   setPinsExpanded]   = useState(false);
-  const [pinSource,      setPinSource]      = useState<PinSource>("all");
   const [pinCategory,    setPinCategory]    = useState<PinCategory>("all");
   const [outfitLoading,  setOutfitLoading]  = useState(false);
   const [result,         setResult]         = useState<OutfitResult | null>(null);
@@ -162,14 +160,14 @@ export default function HomePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          occasion, vibe, wardrobeItems: allItems, weather,
+          occasion, vibe, wardrobeItems: wardrobeOnly, weather,
           pinnedIds: [...pinnedIds],
           feedbackContext: getFeedbackContext(fbOverride ?? feedbackHistory),
         }),
       });
       const data = await res.json();
       if (!res.ok) { setOutfitError(data.error ?? "Something went wrong."); return; }
-      const itemMap = new Map(allItems.map(i => [i.id, i]));
+      const itemMap = new Map(wardrobeOnly.map(i => [i.id, i]));
       setResult(data);
       setResultItems((data.selectedIds as string[]).map(id => itemMap.get(id)).filter((i): i is TaggedItem => !!i));
     } catch { setOutfitError("Could not reach the server."); }
@@ -187,8 +185,7 @@ export default function HomePage() {
   const wardrobeOnly    = allItems.filter(i => i.source === "wardrobe");
   const emptyWardrobe   = wardrobeOnly.length === 0;
   const canSubmit       = !!occasion && !!vibe;
-  const filteredPinItems = allItems
-    .filter(i => pinSource === "all" || i.source === pinSource)
+  const filteredPinItems = wardrobeOnly
     .filter(i => pinCategory === "all" || i.category === pinCategory);
 
   return (
@@ -197,7 +194,7 @@ export default function HomePage() {
       {/* Nav */}
       <nav className="shrink-0 px-8 py-5 flex items-center bg-[#FAF8F4] border-b border-[#E2DDD6] z-10">
         <Link href="/" className="text-[#1E1E1E] text-sm uppercase" style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}>
-          Seam
+          My Drobe
         </Link>
       </nav>
 
@@ -205,7 +202,7 @@ export default function HomePage() {
       <div className="shrink-0 px-8 flex items-center gap-6 border-b border-[#E2DDD6] bg-[#FAF8F4]">
         <button onClick={() => setView("home")} className="pb-3 pt-4 text-sm transition-colors relative text-[#1E1E1E]" style={{ fontFamily: "var(--font-dm-sans)" }}>
           Home
-          {view === "home" && <span className="absolute bottom-0 left-0 right-0 h-px bg-[#1E1E1E]" />}
+          {view === "home" && <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />}
         </button>
         <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>Wardrobe</Link>
         <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>Wishlist</Link>
@@ -219,28 +216,28 @@ export default function HomePage() {
         {/* ── Home landing ── */}
         {view === "home" && (
           <div className="h-full overflow-y-auto">
-            <div className="max-w-xl mx-auto px-10 pt-12 pb-16">
+            <div className="max-w-2xl mx-auto px-10 pt-12 pb-16">
 
               {/* Greeting */}
-              <p style={{ ...fadeIn(visible, 0), fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.8rem, 3vw, 2.4rem)", fontWeight: 400, fontStyle: "italic", color: "#1E1E1E", letterSpacing: "-0.01em", marginBottom: "0.6rem" }}>
+              <p style={{ ...fadeIn(visible, 0), fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 400, fontStyle: "italic", color: "#1E1E1E", letterSpacing: "-0.01em", marginBottom: "0.6rem" }}>
                 {getGreeting()}
               </p>
 
               {/* Date */}
-              <p style={{ ...fadeIn(visible, 0.1), fontFamily: "var(--font-dm-sans)", fontSize: "0.68rem", fontWeight: 300, color: "#B8B3AC", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
+              <p style={{ ...fadeIn(visible, 0.1), fontFamily: "var(--font-dm-sans)", fontSize: "0.75rem", fontWeight: 300, color: "#B8B3AC", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1.75rem" }}>
                 {formatDate(new Date())}
               </p>
 
               {/* Weather */}
-              <div style={{ ...fadeIn(visible, 0.18), marginBottom: "2.5rem", minHeight: "3.5rem" }}>
+              <div style={{ ...fadeIn(visible, 0.18), marginBottom: "3rem", minHeight: "4rem" }}>
                 {weather ? (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <WeatherIcon code={weather.conditionCode} />
                     <div>
-                      <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.4rem, 4vw, 3rem)", fontWeight: 400, color: "#1E1E1E", lineHeight: 1, letterSpacing: "-0.02em" }}>
+                      <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.8rem, 5vw, 3.5rem)", fontWeight: 400, color: "#1E1E1E", lineHeight: 1, letterSpacing: "-0.02em" }}>
                         {weather.temp}°
                       </p>
-                      <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.72rem", fontWeight: 300, color: "#8A847C", letterSpacing: "0.02em", marginTop: "0.2rem" }}>
+                      <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", fontWeight: 300, color: "#8A847C", letterSpacing: "0.02em", marginTop: "0.25rem" }}>
                         {weather.city} · {weather.condition}
                       </p>
                     </div>
@@ -249,15 +246,15 @@ export default function HomePage() {
               </div>
 
               {/* Two cards */}
-              <div className="grid grid-cols-2 gap-4" style={fadeIn(visible, 0.28)}>
+              <div className="grid grid-cols-2 gap-5" style={fadeIn(visible, 0.28)}>
                 <ActionCard
-                  icon={<Shirt size={18} strokeWidth={1.5} className="text-[#8A847C]" />}
+                  icon={<Shirt size={20} strokeWidth={1.5} className="text-[#8A847C]" />}
                   title="Plan today's outfit"
-                  subtitle="Pick an occasion and Seam will dress you."
+                  subtitle="Pick an occasion and My Drobe will dress you."
                   onClick={() => setView("outfit")}
                 />
                 <ActionCard
-                  icon={<Tag size={18} strokeWidth={1.5} className="text-[#8A847C]" />}
+                  icon={<Tag size={20} strokeWidth={1.5} className="text-[#8A847C]" />}
                   title="Should I buy this?"
                   subtitle="Paste a link. Get an honest answer."
                   onClick={() => setView("buy")}
@@ -323,7 +320,7 @@ export default function HomePage() {
                   </div>
 
                   {/* Pin a piece */}
-                  {allItems.length > 0 && (
+                  {wardrobeOnly.length > 0 && (
                     <div>
                       <button
                         onClick={() => setPinsExpanded(v => !v)}
@@ -344,13 +341,6 @@ export default function HomePage() {
 
                       {pinsExpanded && (
                         <div className="mt-4">
-                          <div className="flex gap-1.5 mb-2">
-                            {(["all", "wardrobe", "wishlist"] as PinSource[]).map(s => (
-                              <button key={s} onClick={() => setPinSource(s)} className={pinSource === s ? FILTER_ON : FILTER_OFF} style={FILTER_S}>
-                                {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
-                              </button>
-                            ))}
-                          </div>
                           <div className="flex flex-wrap gap-1.5 mb-4">
                             {(["all", ...PIN_CATEGORIES] as PinCategory[]).map(c => (
                               <button key={c} onClick={() => setPinCategory(c)} className={pinCategory === c ? FILTER_ON : FILTER_OFF} style={FILTER_S}>
@@ -418,7 +408,7 @@ export default function HomePage() {
                 {emptyWardrobe && !outfitLoading && (
                   <div className="h-full flex flex-col items-center justify-center px-12 text-center gap-4">
                     <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.4rem", fontWeight: 400, fontStyle: "italic", color: "#8A847C" }}>Your wardrobe is empty.</p>
-                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#B8B3AC", fontWeight: 300 }}>Add some pieces first and Seam will dress you.</p>
+                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#B8B3AC", fontWeight: 300 }}>Add some pieces first and My Drobe will dress you.</p>
                     <Link href="/onboarding" className="mt-1 px-5 py-2.5 rounded-full text-sm bg-[#1E1E1E] text-[#FAF8F4] hover:bg-[#3A3530] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
                       Add to wardrobe
                     </Link>
@@ -534,21 +524,21 @@ function ActionCard({ icon, title, subtitle, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="text-left flex flex-col gap-6 p-7 border border-[#E2DDD6] rounded-2xl bg-[#FAF8F4] hover:bg-[#F0EBE3] transition-all group"
-      style={{ minHeight: "13rem" }}
+      className="text-left flex flex-col gap-7 p-8 rounded-2xl bg-white hover:bg-[#F7F4F0] transition-all group"
+      style={{ minHeight: "16rem", boxShadow: "0 1px 3px rgba(30,20,10,0.06), 0 4px 16px rgba(30,20,10,0.04)" }}
     >
-      <div className="w-9 h-9 rounded-full bg-[#F0EBE3] group-hover:bg-[#E8E2D9] flex items-center justify-center transition-colors shrink-0">
+      <div className="w-10 h-10 rounded-full bg-[#F2EDE5] group-hover:bg-[#EAE4DB] flex items-center justify-center transition-colors shrink-0">
         {icon}
       </div>
       <div className="flex-1">
-        <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 400, color: "#1E1E1E", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+        <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.6rem", fontWeight: 400, color: "#1E1E1E", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
           {title}
         </p>
-        <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#8A847C", fontWeight: 300, marginTop: "0.35rem", lineHeight: 1.5 }}>
+        <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#8A847C", fontWeight: 300, marginTop: "0.4rem", lineHeight: 1.55 }}>
           {subtitle}
         </p>
       </div>
-      <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#C8C3BC" }}>→</span>
+      <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.88rem", color: "#C8C3BC", transition: "color 0.2s" }} className="group-hover:text-[#8A847C]">→</span>
     </button>
   );
 }
@@ -618,7 +608,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
               Paste a link, get a verdict.
             </p>
             <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", color: "#B8B3AC", fontWeight: 300, marginBottom: "1.5rem" }}>
-              Seam will check it against your wardrobe and tell you if it&apos;s worth it.
+              My Drobe will check it against your wardrobe and tell you if it&apos;s worth it.
             </p>
           </>
         )}
@@ -668,100 +658,129 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
         </div>
       )}
 
-      {/* Result — two column */}
+      {/* Result */}
       {result && product && (
-        <div className="flex gap-10">
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{ border: "1px solid #EAE6E0", background: "#FDFCFA", boxShadow: "0 2px 20px rgba(30,20,10,0.06)" }}
+        >
+          <div className="flex min-h-0">
 
-          {/* Left: product image + meta */}
-          <div className="shrink-0 w-44">
-            <div className="w-44 aspect-[3/4] rounded-2xl overflow-hidden bg-[#F0EBE3] mb-3">
-              {product.image
-                // eslint-disable-next-line @next/next/no-img-element
-                ? <img src={product.image} alt={product.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                : <div className="w-full h-full flex items-center justify-center"><div className="w-10 h-10 rounded-full bg-[#E2DDD6]" /></div>}
-            </div>
-            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", fontWeight: 500, color: "#1E1E1E", lineHeight: 1.35 }}>{product.name}</p>
-            {product.brand && <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.72rem", color: "#8A847C", fontWeight: 300, marginTop: "0.15rem" }}>{product.brand}</p>}
-            {product.price && <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#3A3530", marginTop: "0.2rem" }}>{product.price}</p>}
-            <a href={product.url} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1 text-[#C8C3BC] hover:text-[#8A847C] transition-colors mt-2"
-              style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.68rem" }}>
-              View original <ExternalLink size={9} />
-            </a>
-          </div>
-
-          {/* Right: verdict */}
-          <div className="flex-1 min-w-0">
-
-            {/* Verdict */}
-            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", fontWeight: 500, color: VERDICT_COLOR[result.verdict], letterSpacing: "0.01em", marginBottom: "1rem" }}>
-              {result.verdict}
-            </p>
-
-            {/* Reasons */}
-            <ul className="space-y-2.5 mb-6">
-              {result.reasons.map((reason, i) => (
-                <li key={i} className="flex items-start gap-2.5">
-                  <span style={{ color: "#C8C3BC", lineHeight: "1.6", flexShrink: 0 }}>—</span>
-                  <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#3A3530", lineHeight: 1.6, fontWeight: 300 }}>{reason}</span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Pairs with */}
-            {pairingItems.length > 0 && (
-              <div className="mb-6">
-                <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.62rem", letterSpacing: "0.12em", color: "#B8B3AC", textTransform: "uppercase", marginBottom: "0.75rem" }}>
-                  Pairs with
-                </p>
-                <div className="flex gap-3 flex-wrap">
-                  {pairingItems.map(item => (
-                    <div key={item.id} className="flex flex-col items-center gap-1.5 w-14">
-                      <div className="w-14 h-[4.25rem] rounded-xl overflow-hidden bg-[#F0EBE3]">
-                        {item.image
-                          // eslint-disable-next-line @next/next/no-img-element
-                          ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                          : <div className="w-full h-full flex items-center justify-center"><div className="w-5 h-5 rounded-full bg-[#E2DDD6]" /></div>}
-                      </div>
-                      <p className="text-center leading-tight line-clamp-2 w-full" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.62rem", color: "#8A847C" }}>
-                        {item.name}
-                      </p>
-                    </div>
-                  ))}
+            {/* Left: large product image */}
+            <div className="shrink-0 w-52 relative" style={{ background: "#EDE9E2" }}>
+              <div className="w-52 h-full min-h-[340px] relative">
+                {product.image
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  : <div className="w-full h-full flex items-center justify-center"><div className="w-12 h-12 rounded-full bg-[#D8D3CC]" /></div>}
+              </div>
+              {/* Price badge */}
+              {product.price && (
+                <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full" style={{ background: "rgba(250,248,244,0.92)", backdropFilter: "blur(6px)" }}>
+                  <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.75rem", fontWeight: 500, color: "#1E1E1E" }}>{product.price}</p>
                 </div>
+              )}
+            </div>
+
+            {/* Right: verdict content */}
+            <div className="flex-1 min-w-0 flex flex-col p-7 gap-5">
+
+              {/* Product name + brand + link */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.45rem", fontWeight: 400, fontStyle: "italic", color: "#1E1E1E", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+                    {product.name}
+                  </p>
+                  {product.brand && (
+                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.72rem", color: "#8A847C", fontWeight: 300, marginTop: "0.2rem" }}>{product.brand}</p>
+                  )}
+                </div>
+                <a href={product.url} target="_blank" rel="noopener noreferrer"
+                  className="shrink-0 flex items-center gap-1 text-[#C8C3BC] hover:text-[#8A847C] transition-colors mt-1"
+                  style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.68rem" }}>
+                  <ExternalLink size={11} />
+                </a>
               </div>
-            )}
 
-            {/* Divider */}
-            <div className="h-px bg-[#E2DDD6] mb-4" />
-
-            {/* CTA */}
-            {!added ? (
+              {/* Verdict — prominent */}
               <div className="flex items-center gap-3">
-                <button onClick={() => addItem("wardrobe")}
-                  className="px-4 py-2 rounded-full text-xs bg-[#1E1E1E] text-[#FAF8F4] hover:bg-[#3A3530] transition-colors"
-                  style={{ fontFamily: "var(--font-dm-sans)" }}>
-                  Add to Wardrobe
-                </button>
-                <button onClick={() => addItem("wishlist")}
-                  className="px-4 py-2 rounded-full text-xs border border-[#E2DDD6] text-[#3A3530] hover:border-[#B8B3AC] hover:bg-[#F0EBE3] transition-colors"
-                  style={{ fontFamily: "var(--font-dm-sans)" }}>
-                  Save to Wishlist
-                </button>
-                <button onClick={reset} className="ml-auto text-xs text-[#C8C3BC] hover:text-[#8A847C] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                  Check another
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", color: "#8A847C", fontWeight: 300 }}>
-                  Added to {added === "wardrobe" ? "your wardrobe" : "your wishlist"}.
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ background: VERDICT_COLOR[result.verdict] }}
+                />
+                <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", fontWeight: 600, color: VERDICT_COLOR[result.verdict], letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                  {result.verdict}
                 </p>
-                <button onClick={reset} className="text-xs text-[#C8C3BC] hover:text-[#8A847C] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                  Check another
-                </button>
               </div>
-            )}
+
+              {/* Divider */}
+              <div className="h-px bg-[#EAE6E0]" />
+
+              {/* Reasons */}
+              <ul className="space-y-2 flex-1">
+                {result.reasons.map((reason, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span style={{ color: "#C8C3BC", lineHeight: "1.65", flexShrink: 0, fontSize: "0.8rem" }}>—</span>
+                    <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#3A3530", lineHeight: 1.65, fontWeight: 300 }}>{reason}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Pairs with */}
+              {pairingItems.length > 0 && (
+                <div>
+                  <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.6rem", letterSpacing: "0.14em", color: "#B8B3AC", textTransform: "uppercase", marginBottom: "0.6rem" }}>
+                    Pairs with
+                  </p>
+                  <div className="flex gap-2.5">
+                    {pairingItems.map(item => (
+                      <div key={item.id} className="flex flex-col gap-1 w-16">
+                        <div className="w-16 aspect-[3/4] rounded-lg overflow-hidden bg-[#EDE9E2]">
+                          {item.image
+                            // eslint-disable-next-line @next/next/no-img-element
+                            ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            : <div className="w-full h-full flex items-center justify-center"><div className="w-5 h-5 rounded-full bg-[#D8D3CC]" /></div>}
+                        </div>
+                        <p className="leading-tight line-clamp-2" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.6rem", color: "#8A847C" }}>
+                          {item.name}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* CTA */}
+              <div className="pt-1 border-t border-[#EAE6E0]">
+                {!added ? (
+                  <div className="flex items-center gap-2.5">
+                    <button onClick={() => addItem("wardrobe")}
+                      className="px-4 py-2 rounded-full text-xs bg-[#1E1E1E] text-[#FAF8F4] hover:bg-[#3A3530] transition-colors"
+                      style={{ fontFamily: "var(--font-dm-sans)" }}>
+                      Add to Wardrobe
+                    </button>
+                    <button onClick={() => addItem("wishlist")}
+                      className="px-4 py-2 rounded-full text-xs border border-[#E2DDD6] text-[#3A3530] hover:border-[#B8B3AC] hover:bg-[#F0EBE3] transition-colors"
+                      style={{ fontFamily: "var(--font-dm-sans)" }}>
+                      Save to Wishlist
+                    </button>
+                    <button onClick={reset} className="ml-auto text-xs text-[#C8C3BC] hover:text-[#8A847C] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                      Check another →
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", color: "#8A847C", fontWeight: 300 }}>
+                      Added to {added === "wardrobe" ? "your wardrobe" : "your wishlist"}.
+                    </p>
+                    <button onClick={reset} className="text-xs text-[#C8C3BC] hover:text-[#8A847C] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                      Check another →
+                    </button>
+                  </div>
+                )}
+              </div>
+
+            </div>
           </div>
         </div>
       )}

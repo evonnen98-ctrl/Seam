@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import Link from "next/link";
 import { Send, Sparkles, Plus, X, Upload, ExternalLink, ChevronDown, Shirt, Bookmark } from "lucide-react";
-import { type WardrobeItem, fetchItems, fetchWishlist, upsertItem, deleteItemById, moveItemToList } from "@/lib/wardrobe";
+import { type WardrobeItem, fetchItems, fetchWishlist, upsertItem, deleteItemById, moveItemToList, logWear } from "@/lib/wardrobe";
 import { inferCategory } from "@/lib/categorize";
 import { AddItemModal } from "@/components/AddItemModal";
 import { CURRENCIES, type CurrencyCode, loadCurrencyPreference, saveCurrencyPreference, displayPrice, itemPriceUSD, fromUSD, getSymbol, detectPriceCurrency, parsePriceAmount, toUSD } from "@/lib/currency";
@@ -18,31 +18,38 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "az",         label: "A–Z" },
 ];
 
-function parsePrice(price?: string): number {
+// Parse a price string to a USD-normalised number for comparison.
+// Uses currency detection so "A$140" and "$100" compare correctly.
+function parsePriceUSD(price?: string): number {
   if (!price) return -1;
-  const n = parseFloat(price.replace(/[^0-9.]/g, ""));
-  return isNaN(n) ? -1 : n;
+  const amount = parsePriceAmount(price);
+  if (amount == null || isNaN(amount)) return -1;
+  const currency = detectPriceCurrency(price) ?? "USD";
+  const usd = toUSD(amount, currency);
+  return isNaN(usd) ? -1 : usd;
 }
-
 
 function sortItems(items: WardrobeItem[], key: SortKey): WardrobeItem[] {
   const arr = [...items];
   switch (key) {
-    case "newest":   return arr;
-    case "oldest":   return arr.reverse();
+    case "newest":
+      // DB already returns newest-first; sort by createdAt desc as a safety net
+      return arr.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+    case "oldest":
+      return arr.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
     case "price-high":
       return arr.sort((a, b) => {
-        const pa = parsePrice(a.price), pb = parsePrice(b.price);
+        const pa = parsePriceUSD(a.price), pb = parsePriceUSD(b.price);
         if (pa === -1 && pb === -1) return 0;
-        if (pa === -1) return 1;
+        if (pa === -1) return 1;   // no price → end
         if (pb === -1) return -1;
         return pb - pa;
       });
     case "price-low":
       return arr.sort((a, b) => {
-        const pa = parsePrice(a.price), pb = parsePrice(b.price);
+        const pa = parsePriceUSD(a.price), pb = parsePriceUSD(b.price);
         if (pa === -1 && pb === -1) return 0;
-        if (pa === -1) return 1;
+        if (pa === -1) return 1;   // no price → end
         if (pb === -1) return -1;
         return pa - pb;
       });
@@ -66,7 +73,7 @@ function sumPrices(items: WardrobeItem[], displayCurrency: string): string {
 
 // ── Categories ────────────────────────────────────────────────────────────────
 
-const CATEGORIES = ["Outerwear", "Tops", "Bottoms", "Accessories", "Shoes", "Other"] as const;
+const CATEGORIES = ["Outerwear", "Tops", "Dresses", "Bottoms", "Accessories", "Shoes", "Other"] as const;
 
 interface Message {
   id: string;
@@ -77,6 +84,7 @@ interface Message {
 export default function WardrobePage() {
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [wishlist, setWishlist] = useState<WardrobeItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"wardrobe" | "wishlist">("wardrobe");
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -109,6 +117,7 @@ export default function WardrobePage() {
       const [wardrobe, wishlist] = await Promise.all([fetchItems(), fetchWishlist()]);
       setItems(await backfill(wardrobe, "wardrobe"));
       setWishlist(await backfill(wishlist, "wishlist"));
+      setLoading(false);
     }
     load();
     setCurrency(loadCurrencyPreference());
@@ -227,10 +236,10 @@ export default function WardrobePage() {
       <nav className="sticky top-0 z-10 px-8 py-5 flex items-center bg-[#FAF8F4] border-b border-[#E2DDD6]">
         <Link
           href="/"
-          className="text-[#1E1E1E] tracking-widest text-sm uppercase"
+          className="text-[#1E1E1E] text-sm uppercase"
           style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
         >
-          Seam
+          My Drobe
         </Link>
       </nav>
 
@@ -254,7 +263,7 @@ export default function WardrobePage() {
           >
             {t === "wardrobe" ? "Wardrobe" : "Wishlist"}
             {tab === t && (
-              <span className="absolute bottom-0 left-0 right-0 h-px bg-[#1E1E1E]" />
+              <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
             )}
           </button>
         ))}
@@ -302,7 +311,7 @@ export default function WardrobePage() {
       </div>
 
       {/* Filters + stats row */}
-      {activeItems.length > 0 && (
+      {!loading && activeItems.length > 0 && (
         <div className="px-8 pb-4 flex items-center justify-between gap-4">
           {/* Category pills — left */}
           <div className="flex items-center gap-1 flex-wrap">
@@ -343,8 +352,21 @@ export default function WardrobePage() {
         </div>
       )}
 
-      {/* Empty state */}
-      {activeItems.length === 0 && (
+      {/* Skeleton loading grid */}
+      {loading && (
+        <div className="px-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[3/4] rounded-xl bg-[#EDE8E1] mb-3" />
+              <div className="h-3 bg-[#EDE8E1] rounded-full mb-1.5 w-3/4" />
+              <div className="h-2.5 bg-[#EDE8E1] rounded-full w-1/2" />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty state — only shown once loading is done */}
+      {!loading && activeItems.length === 0 && (
         <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 text-center pb-32">
           <div className="w-16 h-16 rounded-full bg-[#F0EBE3] flex items-center justify-center">
             <Sparkles size={20} className="text-[#8A847C]" />
@@ -369,7 +391,7 @@ export default function WardrobePage() {
       )}
 
       {/* Grid */}
-      {filtered.length > 0 && (
+      {!loading && filtered.length > 0 && (
         <div className="px-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {filtered.map((item) => (
             <ItemCard key={item.id} item={item} list={tab} onClick={() => setEditingItem(item)} currency={currency} />
@@ -394,7 +416,6 @@ export default function WardrobePage() {
         <EditModal
           item={editingItem}
           list={tab}
-          wardrobeItems={items}
           onSave={saveEdit}
           onDelete={deleteItem}
           onMoveToWardrobe={moveToWardrobe}
@@ -486,7 +507,7 @@ export default function WardrobePage() {
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !isStreaming && sendMessage()}
-              placeholder={isStreaming ? "Seam is thinking…" : "Ask anything about your wardrobe…"}
+              placeholder={isStreaming ? "My Drobe is thinking…" : "Ask anything about your wardrobe…"}
               disabled={isStreaming}
               className="flex-1 bg-transparent text-sm text-[#1E1E1E] placeholder-[#B8B3AC] outline-none disabled:opacity-60"
               style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -510,7 +531,6 @@ export default function WardrobePage() {
 function EditModal({
   item,
   list,
-  wardrobeItems,
   onSave,
   onDelete,
   onMoveToWardrobe,
@@ -520,7 +540,6 @@ function EditModal({
 }: {
   item: WardrobeItem;
   list: "wardrobe" | "wishlist";
-  wardrobeItems: WardrobeItem[];
   onSave: (item: WardrobeItem) => void;
   onDelete: (id: string) => void;
   onMoveToWardrobe: (id: string) => void;
@@ -530,13 +549,7 @@ function EditModal({
 }) {
   const [draft, setDraft] = useState<WardrobeItem>(item);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [insightData, setInsightData] = useState<{
-    insights: string[];
-    outfitCombinations: string[][];
-    verdict: "Worth it" | "Consider it" | "Think twice";
-    verdictReason: string;
-  } | null>(null);
-  const [insightLoading, setInsightLoading] = useState(false);
+  const [wearLogging, setWearLogging] = useState(false);
 
   // Price field shows the price in the user's preferred currency; on save converts back to USD
   const [priceInput, setPriceInput] = useState(() => {
@@ -544,34 +557,15 @@ function EditModal({
     return item.price ?? "";
   });
 
-  useEffect(() => {
-    if (list !== "wishlist") return;
-    setInsightLoading(true);
-    setInsightData(null);
-    async function fetchInsight() {
-      try {
-        // Strip images before sending — Claude only needs name/brand/category
-        const wardrobeForAPI = wardrobeItems.map(({ image: _, ...rest }) => rest);
-        const res = await fetch("/api/insights", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ item: { ...item, image: undefined }, wardrobeItems: wardrobeForAPI }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          console.error("[insights] API error:", data.error);
-          return;
-        }
-        setInsightData(data);
-      } catch (err) {
-        console.error("[insights] Fetch error:", err);
-      } finally {
-        setInsightLoading(false);
-      }
-    }
-    fetchInsight();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  async function handleLogWear() {
+    if (wearLogging) return;
+    setWearLogging(true);
+    const now = new Date().toISOString();
+    const newCount = (draft.wornCount ?? 0) + 1;
+    setDraft(d => ({ ...d, wornCount: newCount, lastWorn: now }));
+    await logWear(item.id);
+    setWearLogging(false);
+  }
   const imageInputRef = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -742,109 +736,55 @@ function EditModal({
             </div>
           </div>
 
-          {/* Wishlist insights */}
-          {list === "wishlist" && (
-            <div className="rounded-xl border border-[#E2DDD6] bg-[#F7F4F0] px-4 py-3.5 space-y-3">
-              <p
-                className="text-[9px] uppercase text-[#B8B3AC]"
-                style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.12em" }}
-              >
-                Seam recommends
-              </p>
-              {insightLoading && !insightData ? (
-                <span className="flex items-center gap-1 py-0.5">
-                  {[0, 1, 2].map((i) => (
-                    <span
-                      key={i}
-                      className="w-1 h-1 rounded-full bg-[#C8B89A] inline-block animate-pulse"
-                      style={{ animationDelay: `${i * 150}ms` }}
-                    />
-                  ))}
-                </span>
-              ) : insightData ? (
-                <>
-                  {/* Verdict */}
-                  <div className="flex flex-col gap-0.5">
-                    <span
-                      className="text-sm font-medium"
-                      style={{
-                        fontFamily: "var(--font-dm-sans)",
-                        color: insightData.verdict === "Worth it"
-                          ? "#4A7C59"
-                          : insightData.verdict === "Think twice"
-                          ? "#A0742A"
-                          : "#6B6560",
-                      }}
-                    >
-                      {insightData.verdict}
-                    </span>
-                    {insightData.verdictReason && (
-                      <p className="text-[11px] text-[#8A847C] leading-relaxed" style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}>
-                        {insightData.verdictReason}
-                      </p>
-                    )}
+          {/* Cost per wear — wardrobe items only */}
+          {list === "wardrobe" && (
+            <div className="rounded-xl border border-[#E2DDD6] bg-white px-4 py-3.5">
+              <div className="flex items-center justify-between mb-3">
+                <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.62rem", letterSpacing: "0.12em", color: "#B8B3AC", textTransform: "uppercase" }}>
+                  Cost per wear
+                </p>
+                <button
+                  onClick={handleLogWear}
+                  disabled={wearLogging}
+                  className="flex items-center gap-1.5 px-3 py-1 bg-[#1E1E1E] text-[#FAF8F4] rounded-full hover:bg-[#3A3530] transition-colors disabled:opacity-50"
+                  style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.72rem" }}
+                >
+                  <Sparkles size={10} strokeWidth={1.5} />
+                  Log a wear
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  {
+                    label: "Worn",
+                    value: String(draft.wornCount ?? 0),
+                  },
+                  {
+                    label: "Cost / wear",
+                    value: (() => {
+                      const count = draft.wornCount ?? 0;
+                      const usd = itemPriceUSD(draft.price, draft.priceCurrency, draft.priceUSD);
+                      if (count === 0 || usd == null) return "—";
+                      return displayPrice(usd / count, currencyPref);
+                    })(),
+                  },
+                  {
+                    label: "Last worn",
+                    value: draft.lastWorn
+                      ? new Date(draft.lastWorn).toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+                      : "Never",
+                  },
+                ].map(({ label, value }) => (
+                  <div key={label}>
+                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.6rem", letterSpacing: "0.1em", color: "#B8B3AC", textTransform: "uppercase", marginBottom: "0.25rem" }}>
+                      {label}
+                    </p>
+                    <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.15rem", fontWeight: 400, color: "#1E1E1E", lineHeight: 1.2 }}>
+                      {value}
+                    </p>
                   </div>
-
-                  {/* Divider */}
-                  <div className="h-px bg-[#E2DDD6]" />
-
-                  {/* Bullet insights */}
-                  <ul className="space-y-1.5">
-                    {insightData.insights.map((line, i) => (
-                      <li key={i} className="text-xs text-[#8A847C] leading-relaxed" style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}>
-                        {line.trim()}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Outfit combinations */}
-                  {insightData.outfitCombinations.length > 0 && (() => {
-                    function resolveItem(name: string): WardrobeItem | undefined {
-                      const lower = name.toLowerCase();
-                      return wardrobeItems.find((w) =>
-                        w.name.toLowerCase() === lower ||
-                        (w.brand && `${w.name} by ${w.brand}`.toLowerCase() === lower)
-                      );
-                    }
-                    const outfits = insightData.outfitCombinations
-                      .map((combo) => combo.map(resolveItem).filter((w): w is WardrobeItem => !!w))
-                      .filter((combo) => combo.length > 0);
-                    if (outfits.length === 0) return null;
-                    return (
-                      <div className="space-y-2.5">
-                        <div className="h-px bg-[#E2DDD6]" />
-                        <p className="text-[9px] uppercase text-[#B8B3AC]" style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.12em" }}>
-                          Outfit ideas
-                        </p>
-                        <div className="space-y-3">
-                          {outfits.map((combo, oi) => (
-                            <div key={oi} className="flex items-start gap-2">
-                              {combo.map((w) => (
-                                <div key={w.id} className="flex flex-col items-center gap-1 w-12 shrink-0">
-                                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#F0EBE3]">
-                                    {w.image ? (
-                                      // eslint-disable-next-line @next/next/no-img-element
-                                      <img
-                                        src={w.image}
-                                        alt={w.name}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                                      />
-                                    ) : null}
-                                  </div>
-                                  <p className="text-[9px] text-[#B8B3AC] text-center leading-tight line-clamp-2 w-full" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                                    {w.name}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </>
-              ) : null}
+                ))}
+              </div>
             </div>
           )}
         </div>

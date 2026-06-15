@@ -114,13 +114,13 @@ export default function OnboardingPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] flex flex-col">
-      <nav className="px-10 py-8 flex items-center justify-between">
+      <nav className="px-8 py-5 flex items-center justify-between border-b border-[#E2DDD6]">
         <Link
           href="/"
-          className="text-[#1E1E1E] tracking-widest text-sm uppercase"
+          className="text-[#1E1E1E] text-sm uppercase"
           style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
         >
-          Seam
+          My Drobe
         </Link>
         <span className="text-[#8A847C] text-sm" style={{ fontFamily: "var(--font-dm-sans)" }}>
           1 of 1
@@ -132,7 +132,7 @@ export default function OnboardingPage() {
           className="text-[#1E1E1E] mb-3 leading-tight"
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "clamp(2rem, 5vw, 3.25rem)",
+            fontSize: "clamp(2rem, 4vw, 2.75rem)",
             fontWeight: 400,
             letterSpacing: "-0.01em",
           }}

@@ -5,12 +5,16 @@ const CATEGORY_RULES: Array<{ category: string; pattern: RegExp }> = [
     pattern: /\b(coat|jacket|blazer|vest|gilet|parka|trench|puffer|anorak)\b/i,
   },
   {
+    category: "Dresses",
+    pattern: /\b(dress|gown|midi|maxi|jumpsuit|playsuit|romper)\b/i,
+  },
+  {
     category: "Bottoms",
-    pattern: /\b(bottom|pants|trousers|jeans|skirt|shorts|short|leggings|tights|culottes|chinos)\b/i,
+    pattern: /\b(bottom|pants|trousers|jeans|skirt|shorts|short|leggings|tights|culottes|chinos|mini)\b/i,
   },
   {
     category: "Tops",
-    pattern: /\b(top|shirt|blouse|tee|tank|cami|corset|bustier|crop|cardigan|jumper|sweater|hoodie|sweatshirt|polo|knit|knitwear|turtleneck|pullover|dress|gown|midi|maxi|mini|slip dress|jumpsuit|playsuit|romper|wool)\b/i,
+    pattern: /\b(top|shirt|blouse|tee|tank|cami|corset|bustier|crop|cardigan|jumper|sweater|hoodie|sweatshirt|polo|knit|knitwear|turtleneck|pullover|wool)\b/i,
   },
   {
     category: "Shoes",

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { X, Plus, Check, Shirt, Bookmark, ChevronDown } from "lucide-react";
+import { X, Check, Shirt, Bookmark, ChevronDown } from "lucide-react";
 import { type WardrobeItem, fetchItems, fetchWishlist } from "@/lib/wardrobe";
 import { loadOutfits, saveOutfits, OUTFIT_TAGS, type OutfitTag } from "@/lib/outfits";
 
@@ -15,7 +15,7 @@ interface ZoneItem {
 
 const ZONES = [
   { id: "top",         header: "Top",         subLabel: "Outerwear · Tops · Knitwear · Dresses" },
-  { id: "bottom",      header: "Bottom",      subLabel: "Pants · Skirts · Shorts · Denim · Jeans" },
+  { id: "bottom",      header: "Bottom",      subLabel: "Pants · Skirts · Shorts · Denim" },
   { id: "accessories", header: "Accessories", subLabel: "Shoes · Bags · Belts · Jewellery" },
 ] as const;
 
@@ -23,10 +23,10 @@ type ZoneId = typeof ZONES[number]["id"];
 
 const EMPTY_ZONES: Record<ZoneId, ZoneItem[]> = { top: [], bottom: [], accessories: [] };
 
-export default function OutfitsPage() {
-  const PICKER_CATEGORIES = ["Outerwear", "Tops", "Bottoms", "Accessories", "Shoes", "Other"] as const;
-  type PickerCategory = typeof PICKER_CATEGORIES[number];
+const PICKER_CATEGORIES = ["Outerwear", "Tops", "Dresses", "Bottoms", "Accessories", "Shoes", "Other"] as const;
+type PickerCategory = typeof PICKER_CATEGORIES[number];
 
+export default function OutfitsPage() {
   const [allItems, setAllItems] = useState<TaggedItem[]>([]);
   const [pickerFilter, setPickerFilter] = useState<"all" | "wardrobe" | "wishlist">("all");
   const [pickerCategory, setPickerCategory] = useState<PickerCategory | "all">("all");
@@ -36,6 +36,7 @@ export default function OutfitsPage() {
   const [outfitName, setOutfitName] = useState("");
   const [outfitTag, setOutfitTag] = useState<OutfitTag | "">("");
   const [saved, setSaved] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function load() {
@@ -121,6 +122,7 @@ export default function OutfitsPage() {
   const pickerItems = allItems
     .filter((i) => pickerFilter === "all" || i.source === pickerFilter)
     .filter((i) => pickerCategory === "all" || i.category === pickerCategory);
+
   const totalItems = Object.values(zones).reduce((n, arr) => n + arr.length, 0);
 
   function handleSave() {
@@ -153,71 +155,73 @@ export default function OutfitsPage() {
     setOutfitTag("");
     setZones(EMPTY_ZONES);
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setTimeout(() => setSaved(false), 3000);
+  }
+
+  function handleCancelSave() {
+    setIsSaving(false);
+    setOutfitTag("");
+    setEditingId(null);
+    setZones(EMPTY_ZONES);
+    setOutfitName("");
+  }
+
+  function handleStartSaving() {
+    setIsSaving(true);
+    setTimeout(() => nameInputRef.current?.focus(), 50);
   }
 
   return (
-    <main className="h-screen flex flex-col bg-[#FAF8F4] overflow-hidden">
+    <main className="h-screen flex flex-col overflow-hidden" style={{ background: "#FAF8F4" }}>
 
       {/* Nav */}
       <nav className="shrink-0 px-8 py-5 flex items-center justify-between border-b border-[#E2DDD6]">
         <Link
           href="/"
-          className="text-[#1E1E1E] tracking-widest text-sm uppercase"
+          className="text-[#1E1E1E] text-sm uppercase"
           style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
         >
-          Seam
+          My Drobe
         </Link>
       </nav>
 
       {/* Tabs */}
       <div className="shrink-0 px-8 flex items-center gap-6 border-b border-[#E2DDD6]">
-        <Link
-          href="/home"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Home
-        </Link>
-        <Link
-          href="/wardrobe"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Wardrobe
-        </Link>
-        <Link
-          href="/wardrobe"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Wishlist
-        </Link>
-        <Link
-          href="/outfits/saved"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Saved Outfits
-        </Link>
+        {[
+          { label: "Home", href: "/home" },
+          { label: "Wardrobe", href: "/wardrobe" },
+          { label: "Wishlist", href: "/wardrobe" },
+          { label: "Saved Outfits", href: "/outfits/saved" },
+        ].map(({ label, href }) => (
+          <Link
+            key={label}
+            href={href}
+            className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
+            style={{ fontFamily: "var(--font-dm-sans)" }}
+          >
+            {label}
+          </Link>
+        ))}
         <span
           className="pb-3 pt-4 text-sm text-[#1E1E1E] relative"
           style={{ fontFamily: "var(--font-dm-sans)" }}
         >
           Build
-          <span className="absolute bottom-0 left-0 right-0 h-px bg-[#1E1E1E]" />
+          <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
         </span>
       </div>
 
-      {/* Content */}
+      {/* Body */}
       <div className="flex-1 flex min-h-0">
 
-        {/* Left panel */}
-        <div className="w-1/4 shrink-0 border-r border-[#D8D3CC] bg-[#F0EBE3] flex flex-col min-h-0">
+        {/* ── Left: Piece picker ─────────────────────────────────────────── */}
+        <aside className="w-[320px] shrink-0 border-r border-[#E2DDD6] flex flex-col min-h-0" style={{ background: "#F5F1EC" }}>
+
+          {/* Filter header */}
           <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[#E2DDD6]">
             <p
               className="text-[9px] uppercase text-[#B8B3AC] mb-2.5"
-              style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.1em" }}
+              style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.12em" }}
             >
               Pieces
             </p>
@@ -243,10 +247,12 @@ export default function OutfitsPage() {
               />
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto px-3 pb-4">
-            <div className="grid grid-cols-2 gap-1.5 pt-3">
+
+          {/* Item grid — 2 columns, no names */}
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <div className="grid grid-cols-2 gap-2 pt-3">
               {pickerItems.map((item) => (
-                <ItemPickerCard key={item.id} item={item} onDragStart={onPickerDragStart} />
+                <PickerCard key={item.id} item={item} onDragStart={onPickerDragStart} />
               ))}
               {pickerItems.length === 0 && (
                 <p
@@ -258,18 +264,18 @@ export default function OutfitsPage() {
               )}
             </div>
           </div>
-        </div>
+        </aside>
 
-        {/* Right — zone builder */}
+        {/* ── Right: Zone builder ─────────────────────────────────────────── */}
         <div className="flex-1 flex flex-col min-w-0">
 
           {/* Toolbar */}
-          <div className="shrink-0 px-6 py-3 flex items-start justify-between gap-4 border-b border-[#E2DDD6]">
+          <div className="shrink-0 px-6 py-3 flex items-center justify-between gap-4 border-b border-[#E2DDD6]">
             <p
-              className="text-xs text-[#C8B89A] mt-1.5"
+              className="text-xs text-[#C8B89A]"
               style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300, fontStyle: "italic" }}
             >
-              Drag pieces to build an outfit.
+              Drag pieces into each section to build your outfit.
             </p>
             <div className="flex flex-col items-end gap-1.5">
               {saved && (
@@ -281,11 +287,15 @@ export default function OutfitsPage() {
                 <>
                   <div className="flex items-center gap-2">
                     <input
+                      ref={nameInputRef}
                       autoFocus
                       type="text"
                       value={outfitName}
                       onChange={(e) => setOutfitName(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") { setIsSaving(false); setOutfitTag(""); setEditingId(null); setZones(EMPTY_ZONES); } }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSave();
+                        if (e.key === "Escape") handleCancelSave();
+                      }}
                       placeholder="Name this outfit…"
                       className="px-3 py-1.5 bg-white border border-[#E2DDD6] text-xs text-[#1E1E1E] placeholder-[#C8B89A] outline-none focus:border-[#B8B3AC] transition-colors w-40"
                       style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -296,10 +306,10 @@ export default function OutfitsPage() {
                       className="px-3.5 py-1.5 bg-[#1E1E1E] text-[#FAF8F4] text-xs hover:bg-[#3A3530] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       style={{ fontFamily: "var(--font-dm-sans)" }}
                     >
-                      Save
+                      {editingId ? "Update" : "Save"}
                     </button>
                     <button
-                      onClick={() => { setIsSaving(false); setOutfitTag(""); setEditingId(null); setZones(EMPTY_ZONES); }}
+                      onClick={handleCancelSave}
                       className="px-3.5 py-1.5 text-xs border border-[#E2DDD6] text-[#8A847C] hover:border-[#B8B3AC] hover:text-[#1E1E1E] transition-colors"
                       style={{ fontFamily: "var(--font-dm-sans)" }}
                     >
@@ -325,7 +335,7 @@ export default function OutfitsPage() {
                 </>
               ) : (
                 <button
-                  onClick={() => setIsSaving(true)}
+                  onClick={handleStartSaving}
                   disabled={totalItems === 0}
                   className="px-4 py-1.5 bg-[#1E1E1E] text-[#FAF8F4] text-xs hover:bg-[#3A3530] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -336,8 +346,8 @@ export default function OutfitsPage() {
             </div>
           </div>
 
-          {/* Three zones — fill remaining height, no scroll */}
-          <div className="flex-1 min-h-0 flex flex-col gap-0.5 px-4 py-2">
+          {/* Zones */}
+          <div className="flex-1 min-h-0 flex flex-col gap-3 px-6 py-5 overflow-hidden">
             {ZONES.map((zone) => (
               <DropZone
                 key={zone.id}
@@ -394,7 +404,7 @@ function PickerDropdown({
     <div ref={ref} className="relative flex-1">
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`w-full flex items-center justify-between gap-1 px-2 py-1 text-[10px] transition-colors border-b ${
+        className={`w-full flex items-center justify-between gap-1 px-2 py-1.5 text-xs transition-colors border-b ${
           isFiltered
             ? "border-[#3A3530] text-[#1E1E1E]"
             : "border-[#D8D3CC] text-[#8A847C] hover:text-[#1E1E1E] hover:border-[#B8B3AC]"
@@ -402,7 +412,7 @@ function PickerDropdown({
         style={{ fontFamily: "var(--font-dm-sans)" }}
       >
         <span className="truncate">{isFiltered ? current.label : label}</span>
-        <ChevronDown size={9} className={`shrink-0 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown size={10} className={`shrink-0 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
         <div className="absolute left-0 top-full mt-1 w-full bg-white border border-[#E2DDD6] shadow-sm overflow-hidden z-30">
@@ -410,7 +420,7 @@ function PickerDropdown({
             <button
               key={opt.value}
               onClick={() => { onChange(opt.value); setOpen(false); }}
-              className={`w-full text-left px-2.5 py-1.5 text-[10px] transition-colors ${
+              className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
                 opt.value === value
                   ? "text-[#1E1E1E] bg-[#F0EBE3]"
                   : "text-[#8A847C] hover:text-[#1E1E1E] hover:bg-[#F7F4F0]"
@@ -426,9 +436,9 @@ function PickerDropdown({
   );
 }
 
-// ── Item picker card ──────────────────────────────────────────────────────────
+// ── Picker card — no name label ───────────────────────────────────────────────
 
-function ItemPickerCard({
+function PickerCard({
   item,
   onDragStart,
 }: {
@@ -441,7 +451,7 @@ function ItemPickerCard({
       onDragStart={(e) => onDragStart(e, item.id)}
       className="cursor-grab active:cursor-grabbing select-none"
     >
-      <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-[#F0EBE3] mb-0.5 hover:opacity-80 transition-opacity">
+      <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] hover:opacity-80 transition-opacity">
         {item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -452,18 +462,16 @@ function ItemPickerCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-4 h-4 rounded-full bg-[#E2DDD6] opacity-70" />
+            <div className="w-3 h-3 rounded-full bg-[#D8D3CC]" />
           </div>
         )}
+        {/* Source badge — top right */}
         <div className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-white/75 flex items-center justify-center">
           {item.source === "wardrobe"
             ? <Shirt size={7} className="text-[#8A847C]" />
             : <Bookmark size={7} className="text-[#8A847C]" />}
         </div>
       </div>
-      <p className="text-[8px] text-[#8A847C] truncate leading-tight" style={{ fontFamily: "var(--font-dm-sans)" }}>
-        {item.name}
-      </p>
     </div>
   );
 }
@@ -490,39 +498,66 @@ function DropZone({
   const [isDragOver, setIsDragOver] = useState(false);
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col" style={{ minHeight: 0 }}>
-      {/* Drop area with header inside */}
+    <div
+      className="flex-1 min-h-0 flex flex-col overflow-hidden transition-colors duration-150"
+      onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragOver(false);
+      }}
+      onDrop={(e) => { setIsDragOver(false); onDrop(e); }}
+      style={{
+        border: `1px solid ${isDragOver ? "#C8B89A" : "#DDD8D0"}`,
+        borderRadius: "10px",
+        background: isDragOver ? "#F7F3EE" : "#FDFCFA",
+        boxShadow: isDragOver
+          ? "0 4px 20px rgba(30,20,10,0.10), 0 1px 4px rgba(30,20,10,0.06)"
+          : "0 2px 12px rgba(30,20,10,0.07), 0 1px 3px rgba(30,20,10,0.04)",
+      }}
+    >
+      {/* Label row */}
+      <div className="shrink-0 px-5 pt-4 pb-2 flex items-baseline gap-2.5">
+        <p
+          style={{
+            fontFamily: "var(--font-cormorant)",
+            fontSize: "1.05rem",
+            fontWeight: 400,
+            fontStyle: "italic",
+            color: "#1E1E1E",
+            lineHeight: 1,
+          }}
+        >
+          {header}
+        </p>
+        <p
+          className="text-[9px] text-[#C8C3BC]"
+          style={{ fontFamily: "var(--font-dm-sans)" }}
+        >
+          {subLabel}
+        </p>
+      </div>
+
+      {/* Items area — fills remaining height of the box */}
       <div
-        onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-        onDragLeave={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragOver(false);
-        }}
-        onDrop={(e) => { setIsDragOver(false); onDrop(e); }}
-        className={`flex-1 min-h-0 rounded-lg border border-dashed transition-all duration-150 flex flex-col ${
-          isDragOver ? "border-[#8A847C] bg-[#F0EBE3]" : "border-[#D8D3CC] hover:border-[#B8B3AC]"
-        }`}
+        className="flex-1 min-h-0 flex items-center px-5 pb-4 gap-3 overflow-x-auto"
+        style={{ scrollbarWidth: "none" }}
       >
-        {/* Zone label */}
-        <div className="shrink-0 flex items-baseline gap-2 px-3 pt-2 pb-1">
-          <p className="text-xs text-[#1E1E1E]" style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 500 }}>
-            {header}
+        {items.length === 0 ? (
+          <p
+            className="text-[11px] text-[#C8C3BC] select-none"
+            style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300, fontStyle: "italic" }}
+          >
+            Drop pieces here
           </p>
-          <p className="text-[9px] text-[#B8B3AC]" style={{ fontFamily: "var(--font-dm-sans)" }}>
-            {subLabel}
-          </p>
-        </div>
-        {items.length > 0 && (
-          <div className="flex-1 min-h-0 flex items-center gap-2 px-3 pb-2 overflow-x-auto">
-            {items.map((zi) => (
-              <ZoneItemCard
-                key={zi.instanceId}
-                zi={zi}
-                zoneId={zoneId}
-                onDragStart={onItemDragStart}
-                onRemove={() => onRemove(zi.instanceId)}
-              />
-            ))}
-          </div>
+        ) : (
+          items.map((zi) => (
+            <ZoneCard
+              key={zi.instanceId}
+              zi={zi}
+              zoneId={zoneId}
+              onDragStart={onItemDragStart}
+              onRemove={() => onRemove(zi.instanceId)}
+            />
+          ))
         )}
       </div>
     </div>
@@ -531,7 +566,7 @@ function DropZone({
 
 // ── Zone item card ────────────────────────────────────────────────────────────
 
-function ZoneItemCard({
+function ZoneCard({
   zi,
   zoneId,
   onDragStart,
@@ -546,9 +581,9 @@ function ZoneItemCard({
     <div
       draggable
       onDragStart={(e) => onDragStart(e, zoneId, zi.instanceId)}
-      className="relative shrink-0 h-full group cursor-grab active:cursor-grabbing select-none"
+      className="relative shrink-0 group cursor-grab active:cursor-grabbing select-none"
     >
-      <div className="h-full aspect-[3/4] rounded-lg overflow-hidden bg-[#F0EBE3]">
+      <div className="w-[140px] aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] relative">
         {zi.item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -559,16 +594,27 @@ function ZoneItemCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-8 h-8 rounded-full bg-[#E2DDD6] opacity-70" />
+            <div className="w-6 h-6 rounded-full bg-[#D8D3CC]" />
           </div>
         )}
+        {/* Name on hover */}
+        <div
+          className="absolute bottom-0 left-0 right-0 px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%)" }}
+        >
+          <p className="text-[7px] text-white truncate" style={{ fontFamily: "var(--font-dm-sans)" }}>
+            {zi.item.name}
+          </p>
+        </div>
       </div>
+      {/* Remove */}
       <button
         onClick={(e) => { e.stopPropagation(); onRemove(); }}
         onMouseDown={(e) => e.stopPropagation()}
-        className="absolute top-1.5 right-1.5 w-5 h-5 bg-[#1E1E1E]/60 text-[#FAF8F4] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#1E1E1E]"
+        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+        style={{ background: "#1E1E1E", color: "#FAF8F4" }}
       >
-        <X size={9} />
+        <X size={9} strokeWidth={2.5} />
       </button>
     </div>
   );

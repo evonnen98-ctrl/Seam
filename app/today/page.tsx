@@ -73,10 +73,10 @@ export default function TodayPage() {
       <nav className="sticky top-0 z-10 px-8 py-5 flex items-center justify-between bg-[#FAF8F4] border-b border-[#E2DDD6]">
         <Link
           href="/"
-          className="text-[#1E1E1E] tracking-widest text-sm uppercase"
+          className="text-[#1E1E1E] text-sm uppercase"
           style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
         >
-          Seam
+          My Drobe
         </Link>
         <Link
           href="/onboarding"
@@ -90,40 +90,28 @@ export default function TodayPage() {
 
       {/* Tabs */}
       <div className="px-8 flex items-center gap-6 border-b border-[#E2DDD6]">
-        <Link
-          href="/wardrobe"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Wardrobe
-        </Link>
-        <Link
-          href="/wardrobe"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Wishlist
-        </Link>
-        <Link
-          href="/outfits/saved"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Saved Outfits
-        </Link>
-        <Link
-          href="/outfits"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Build
-        </Link>
+        {[
+          { label: "Home", href: "/home" },
+          { label: "Wardrobe", href: "/wardrobe" },
+          { label: "Wishlist", href: "/wardrobe" },
+          { label: "Saved Outfits", href: "/outfits/saved" },
+          { label: "Build", href: "/outfits" },
+        ].map(({ label, href }) => (
+          <Link
+            key={label}
+            href={href}
+            className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
+            style={{ fontFamily: "var(--font-dm-sans)" }}
+          >
+            {label}
+          </Link>
+        ))}
         <span
           className="pb-3 pt-4 text-sm text-[#1E1E1E] relative"
           style={{ fontFamily: "var(--font-dm-sans)" }}
         >
           Today
-          <span className="absolute bottom-0 left-0 right-0 h-px bg-[#1E1E1E]" />
+          <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
         </span>
       </div>
 
@@ -146,7 +134,7 @@ export default function TodayPage() {
           className="text-[#8A847C] mb-8"
           style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.875rem", fontWeight: 300 }}
         >
-          Pick an occasion and a vibe — Seam will pull an outfit from your wardrobe.
+          Pick an occasion and a vibe — My Drobe will pull an outfit from your wardrobe.
         </p>
 
         {!result && !loading && (

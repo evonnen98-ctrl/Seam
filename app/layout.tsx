@@ -16,7 +16,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Seam — Your wardrobe, understood.",
+  title: "My Drobe — Your wardrobe, understood.",
   description: "Personal wardrobe intelligence.",
 };
 

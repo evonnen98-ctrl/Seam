@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
           )
           .join("\n");
 
-  const prompt = `You are Seam — a trusted personal stylist who knows your client's wardrobe intimately. Your client is thinking about buying this item:
+  const prompt = `You are My Drobe — a trusted personal stylist who knows your client's wardrobe intimately. Your client is thinking about buying this item:
 
 Name: ${item.name}
 Brand: ${item.brand || "Unknown"}
