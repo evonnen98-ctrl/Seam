@@ -204,7 +204,6 @@ export default function OutfitsPage() {
           { label: "Home", href: "/home" },
           { label: "Wardrobe", href: "/wardrobe" },
           { label: "Wishlist", href: "/wardrobe" },
-          { label: "Saved Outfits", href: "/outfits/saved" },
         ].map(({ label, href }) => (
           <Link
             key={label}
@@ -222,6 +221,13 @@ export default function OutfitsPage() {
           Build
           <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
         </span>
+        <Link
+          href="/outfits/saved"
+          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
+          style={{ fontFamily: "var(--font-dm-sans)" }}
+        >
+          Saved Outfits
+        </Link>
       </div>
 
       {/* Body */}

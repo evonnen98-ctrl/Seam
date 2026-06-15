@@ -94,8 +94,8 @@ export default function TodayPage() {
           { label: "Home", href: "/home" },
           { label: "Wardrobe", href: "/wardrobe" },
           { label: "Wishlist", href: "/wardrobe" },
-          { label: "Saved Outfits", href: "/outfits/saved" },
           { label: "Build", href: "/outfits" },
+          { label: "Saved Outfits", href: "/outfits/saved" },
         ].map(({ label, href }) => (
           <Link
             key={label}

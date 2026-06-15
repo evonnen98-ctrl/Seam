@@ -268,18 +268,18 @@ export default function WardrobePage() {
           </button>
         ))}
         <Link
-          href="/outfits/saved"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Saved Outfits
-        </Link>
-        <Link
           href="/outfits"
           className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
           style={{ fontFamily: "var(--font-dm-sans)" }}
         >
           Build
+        </Link>
+        <Link
+          href="/outfits/saved"
+          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
+          style={{ fontFamily: "var(--font-dm-sans)" }}
+        >
+          Saved Outfits
         </Link>
       </div>
 
