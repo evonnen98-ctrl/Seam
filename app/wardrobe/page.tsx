@@ -428,7 +428,14 @@ export default function WardrobePage() {
       {/* Chat panel */}
       {chatOpen && messages.length > 0 && (
         <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-20">
-          <div className="bg-white border border-[#E2DDD6] rounded-2xl shadow-sm p-4 max-h-72 overflow-y-auto space-y-3">
+          <div className="bg-white border border-[#E2DDD6] rounded-2xl shadow-sm p-4 max-h-72 overflow-y-auto space-y-3 relative">
+            <button
+              onClick={() => setChatOpen(false)}
+              className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center text-[#B8B3AC] hover:text-[#1E1E1E] hover:bg-[#F0EBE3] transition-all"
+              aria-label="Close chat"
+            >
+              <X size={11} strokeWidth={2} />
+            </button>
             {messages.map((msg, i) => {
               const isLast = i === messages.length - 1;
               const isStreaming_ = isLast && msg.role === "assistant" && isStreaming;
