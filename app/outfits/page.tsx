@@ -93,6 +93,11 @@ export default function OutfitsPage() {
       const itemId = e.dataTransfer.getData("itemId");
       const item = allItems.find((i) => i.id === itemId);
       if (!item) return;
+      // Prevent duplicates across all zones
+      const alreadyAdded = Object.values(zones).some((zoneItems) =>
+        zoneItems.some((zi) => zi.item.id === itemId)
+      );
+      if (alreadyAdded) return;
       setZones((prev) => ({
         ...prev,
         [toZone]: [...prev[toZone], { instanceId: crypto.randomUUID(), item }],
@@ -118,6 +123,10 @@ export default function OutfitsPage() {
       [zoneId]: prev[zoneId].filter((zi) => zi.instanceId !== instanceId),
     }));
   }
+
+  const inZoneIds = new Set(
+    Object.values(zones).flatMap((zoneItems) => zoneItems.map((zi) => zi.item.id))
+  );
 
   const pickerItems = allItems
     .filter((i) => pickerFilter === "all" || i.source === pickerFilter)
@@ -252,7 +261,7 @@ export default function OutfitsPage() {
           <div className="flex-1 overflow-y-auto px-4 pb-4">
             <div className="grid grid-cols-2 gap-2 pt-3">
               {pickerItems.map((item) => (
-                <PickerCard key={item.id} item={item} onDragStart={onPickerDragStart} />
+                <PickerCard key={item.id} item={item} inZone={inZoneIds.has(item.id)} onDragStart={onPickerDragStart} />
               ))}
               {pickerItems.length === 0 && (
                 <p
@@ -440,18 +449,20 @@ function PickerDropdown({
 
 function PickerCard({
   item,
+  inZone,
   onDragStart,
 }: {
   item: TaggedItem;
+  inZone: boolean;
   onDragStart: (e: React.DragEvent, id: string) => void;
 }) {
   return (
     <div
-      draggable
-      onDragStart={(e) => onDragStart(e, item.id)}
-      className="cursor-grab active:cursor-grabbing select-none"
+      draggable={!inZone}
+      onDragStart={(e) => !inZone && onDragStart(e, item.id)}
+      className={`select-none transition-opacity ${inZone ? "opacity-30 cursor-not-allowed" : "cursor-grab active:cursor-grabbing"}`}
     >
-      <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] hover:opacity-80 transition-opacity">
+      <div className={`relative aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] transition-opacity ${inZone ? "" : "hover:opacity-80"}`}>
         {item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

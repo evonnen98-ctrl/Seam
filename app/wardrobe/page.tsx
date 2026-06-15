@@ -312,12 +312,12 @@ export default function WardrobePage() {
 
       {/* Filters + stats row */}
       {!loading && activeItems.length > 0 && (
-        <div className="px-8 pb-4 flex items-center justify-between gap-4">
-          {/* Category pills — left */}
-          <div className="flex items-center gap-1 flex-wrap">
+        <div className="px-4 sm:px-8 pb-4 flex items-center justify-between gap-4">
+          {/* Category pills — left, horizontally scrollable on mobile */}
+          <div className="flex items-center gap-1 overflow-x-auto flex-nowrap pb-0.5 -mb-0.5">
             <button
               onClick={() => setActiveCategory(null)}
-              className={`px-3.5 py-1.5 rounded-full text-xs transition-all border ${
+              className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs transition-all border ${
                 activeCategory === null
                   ? "border-[#3A3530] text-[#1E1E1E]"
                   : "border-transparent text-[#8A847C] hover:text-[#1E1E1E] hover:bg-[#F0EBE3]"
@@ -330,7 +330,7 @@ export default function WardrobePage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs transition-all border ${
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs transition-all border ${
                   activeCategory === cat
                     ? "border-[#3A3530] text-[#1E1E1E]"
                     : "border-transparent text-[#8A847C] hover:text-[#1E1E1E] hover:bg-[#F0EBE3]"

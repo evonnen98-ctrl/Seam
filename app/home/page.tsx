@@ -127,24 +127,32 @@ export default function HomePage() {
     load();
     setFeedbackHistory(loadFeedback());
     const t = setTimeout(() => setVisible(true), 40);
-    if (!navigator.geolocation) return () => clearTimeout(t);
-    navigator.geolocation.getCurrentPosition(async ({ coords }) => {
+
+    async function fetchWeather(lat: number, lon: number) {
       try {
         const [wRes, gRes] = await Promise.all([
-          fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current=temperature_2m,weathercode&temperature_unit=celsius&timezone=auto`),
-          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${coords.latitude}&lon=${coords.longitude}&format=json`, { headers: { "Accept-Language": "en" } }),
+          fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&temperature_unit=celsius&timezone=auto`),
+          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`, { headers: { "Accept-Language": "en" } }),
         ]);
         const wj = await wRes.json();
         const gj = await gRes.json();
         setWeather({
           temp: Math.round(wj.current.temperature_2m),
-          code: wj.current.weathercode,
           conditionCode: wj.current.weathercode,
           condition: weatherLabel(wj.current.weathercode),
-          city: gj.address?.city || gj.address?.town || gj.address?.village || gj.address?.county || "Your city",
-        } as WeatherData);
+          city: gj.address?.city || gj.address?.town || gj.address?.village || gj.address?.county || "Melbourne",
+        });
       } catch { /* skip */ }
-    }, () => {});
+    }
+
+    if (!navigator.geolocation) {
+      fetchWeather(-37.8136, 144.9631);
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => fetchWeather(coords.latitude, coords.longitude),
+        ()           => fetchWeather(-37.8136, 144.9631),
+      );
+    }
     return () => clearTimeout(t);
   }, []);
 
@@ -199,15 +207,15 @@ export default function HomePage() {
       </nav>
 
       {/* App tabs */}
-      <div className="shrink-0 px-8 flex items-center gap-6 border-b border-[#E2DDD6] bg-[#FAF8F4]">
-        <button onClick={() => setView("home")} className="pb-3 pt-4 text-sm transition-colors relative text-[#1E1E1E]" style={{ fontFamily: "var(--font-dm-sans)" }}>
+      <div className="shrink-0 px-4 sm:px-8 flex items-center gap-5 sm:gap-6 border-b border-[#E2DDD6] bg-[#FAF8F4] overflow-x-auto">
+        <button onClick={() => setView("home")} className="pb-3 pt-4 text-sm transition-colors relative text-[#1E1E1E] whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>
           Home
           {view === "home" && <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />}
         </button>
-        <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>Wardrobe</Link>
-        <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>Wishlist</Link>
-        <Link href="/outfits/saved" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>Saved Outfits</Link>
-        <Link href="/outfits" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>Build</Link>
+        <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Wardrobe</Link>
+        <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Wishlist</Link>
+        <Link href="/outfits/saved" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Saved Outfits</Link>
+        <Link href="/outfits" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Build</Link>
       </div>
 
       {/* Content */}
@@ -216,7 +224,7 @@ export default function HomePage() {
         {/* ── Home landing ── */}
         {view === "home" && (
           <div className="h-full overflow-y-auto">
-            <div className="max-w-2xl mx-auto px-10 pt-12 pb-16">
+            <div className="max-w-2xl mx-auto px-5 sm:px-10 pt-8 sm:pt-12 pb-16">
 
               {/* Greeting */}
               <p style={{ ...fadeIn(visible, 0), fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 400, fontStyle: "italic", color: "#1E1E1E", letterSpacing: "-0.01em", marginBottom: "0.6rem" }}>
@@ -246,7 +254,7 @@ export default function HomePage() {
               </div>
 
               {/* Two cards */}
-              <div className="grid grid-cols-2 gap-5" style={fadeIn(visible, 0.28)}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={fadeIn(visible, 0.28)}>
                 <ActionCard
                   icon={<Shirt size={20} strokeWidth={1.5} className="text-[#8A847C]" />}
                   title="Plan today's outfit"
@@ -282,10 +290,10 @@ export default function HomePage() {
             </div>
 
             {/* Two-column layout */}
-            <div className="flex-1 flex min-h-0">
+            <div className="flex-1 flex flex-col sm:flex-row min-h-0">
 
               {/* Left panel */}
-              <div className="w-[34%] shrink-0 border-r border-[#E2DDD6] bg-[#F7F4F0] flex flex-col overflow-y-auto">
+              <div className="w-full sm:w-[34%] shrink-0 border-b sm:border-b-0 sm:border-r border-[#E2DDD6] bg-[#F7F4F0] flex flex-col overflow-y-auto">
                 <div className="px-8 pt-7 pb-4 flex flex-col gap-7 flex-1">
 
                   {/* Occasion */}
@@ -552,13 +560,16 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
   const [result,       setResult]       = useState<BuyAnalysis | null>(null);
   const [error,        setError]        = useState<string | null>(null);
   const [added,        setAdded]        = useState<"wardrobe" | "wishlist" | null>(null);
+  const [manualMode,   setManualMode]   = useState(false);
+  const [manualName,   setManualName]   = useState("");
+  const [manualPrice,  setManualPrice]  = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Scrape + analyze in one go — no confirmation step
   async function check() {
     const trimmed = url.trim();
     if (!trimmed) return;
-    setLoading(true); setError(null); setProduct(null); setResult(null); setAdded(null);
+    setLoading(true); setError(null); setProduct(null); setResult(null); setAdded(null); setManualMode(false);
     try {
       // Step 1: scrape
       const scrapeRes = await fetch("/api/scrape", {
@@ -566,7 +577,10 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
         body: JSON.stringify({ url: trimmed }),
       });
       const scrapeData = await scrapeRes.json();
-      if (!scrapeRes.ok) { setError("Couldn't read that page — try another link."); return; }
+      if (!scrapeRes.ok) {
+        setError("We couldn't read this link directly. Try pasting the product name and price instead.");
+        return;
+      }
       const scraped: ScrapedProduct = { ...scrapeData, url: trimmed };
       setProduct(scraped);
 
@@ -574,6 +588,23 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
       const analyzeRes = await fetch("/api/should-i-buy", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ item: scraped, wardrobe: wardrobe.map(({ image: _, ...rest }) => rest) }),
+      });
+      const analyzeData = await analyzeRes.json();
+      if (!analyzeRes.ok) { setError(analyzeData.error ?? "Analysis failed."); return; }
+      setResult(analyzeData);
+    } catch { setError("Something went wrong — please try again."); }
+    finally  { setLoading(false); }
+  }
+
+  async function checkManual() {
+    if (!manualName.trim()) return;
+    setLoading(true); setError(null); setResult(null); setAdded(null);
+    const item = { name: manualName.trim(), price: manualPrice.trim() || undefined, url: "" };
+    setProduct({ ...item, url: "" });
+    try {
+      const analyzeRes = await fetch("/api/should-i-buy", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item, wardrobe: wardrobe.map(({ image: _, ...rest }) => rest) }),
       });
       const analyzeData = await analyzeRes.json();
       if (!analyzeRes.ok) { setError(analyzeData.error ?? "Analysis failed."); return; }
@@ -590,6 +621,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
 
   function reset() {
     setUrl(""); setProduct(null); setResult(null); setError(null); setAdded(null);
+    setManualMode(false); setManualName(""); setManualPrice("");
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
@@ -598,7 +630,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
     : [];
 
   return (
-    <div className="px-10 pt-10 pb-16 max-w-3xl">
+    <div className="px-5 sm:px-10 pt-8 sm:pt-10 pb-16 max-w-3xl">
 
       {/* URL input (always visible) */}
       <div className="mb-8">
@@ -642,7 +674,51 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
         )}
 
         {error && (
-          <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#A0742A", fontWeight: 300, marginTop: "0.6rem" }}>{error}</p>
+          <div style={{ marginTop: "0.6rem" }}>
+            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#A0742A", fontWeight: 300 }}>{error}</p>
+            {!manualMode && (
+              <button
+                onClick={() => setManualMode(true)}
+                style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#8A847C", fontWeight: 300, marginTop: "0.4rem", textDecoration: "underline", cursor: "pointer", background: "none", border: "none", padding: 0 }}
+              >
+                Enter details manually instead →
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Manual fallback form */}
+        {manualMode && !result && (
+          <div style={{ marginTop: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#3A3530", fontWeight: 300 }}>Enter the product details:</p>
+            <input
+              type="text"
+              value={manualName}
+              onChange={e => setManualName(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && !loading && checkManual()}
+              placeholder="Product name e.g. Linen blazer"
+              className="px-4 py-3 bg-white border border-[#E2DDD6] rounded-full text-sm text-[#1E1E1E] placeholder-[#C8C3BC] outline-none focus:border-[#B8B3AC]"
+              style={{ fontFamily: "var(--font-dm-sans)" }}
+              autoFocus
+            />
+            <input
+              type="text"
+              value={manualPrice}
+              onChange={e => setManualPrice(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && !loading && checkManual()}
+              placeholder="Price (optional) e.g. $180"
+              className="px-4 py-3 bg-white border border-[#E2DDD6] rounded-full text-sm text-[#1E1E1E] placeholder-[#C8C3BC] outline-none focus:border-[#B8B3AC]"
+              style={{ fontFamily: "var(--font-dm-sans)" }}
+            />
+            <button
+              onClick={checkManual}
+              disabled={!manualName.trim() || loading}
+              className="self-start px-5 py-3 bg-[#1E1E1E] text-[#FAF8F4] rounded-full text-sm hover:bg-[#3A3530] transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+              style={{ fontFamily: "var(--font-dm-sans)" }}
+            >
+              {loading ? <><Loader2 size={13} className="animate-spin" />Checking…</> : "Check it →"}
+            </button>
+          </div>
         )}
       </div>
 
@@ -664,11 +740,11 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
           className="rounded-2xl overflow-hidden"
           style={{ border: "1px solid #EAE6E0", background: "#FDFCFA", boxShadow: "0 2px 20px rgba(30,20,10,0.06)" }}
         >
-          <div className="flex min-h-0">
+          <div className="flex flex-col sm:flex-row min-h-0">
 
             {/* Left: large product image */}
-            <div className="shrink-0 w-52 relative" style={{ background: "#EDE9E2" }}>
-              <div className="w-52 h-full min-h-[340px] relative">
+            <div className="shrink-0 w-full sm:w-52 relative" style={{ background: "#EDE9E2" }}>
+              <div className="w-full sm:w-52 h-48 sm:h-full sm:min-h-[340px] relative">
                 {product.image
                   // eslint-disable-next-line @next/next/no-img-element
                   ? <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />

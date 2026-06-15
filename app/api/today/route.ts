@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { type WardrobeItem } from "@/lib/wardrobe";
 
-const client = new Anthropic({ apiKey: process.env.SEAM_ANTHROPIC_API_KEY });
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 interface WeatherData {
   city: string;

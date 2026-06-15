@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { type WardrobeItem } from "@/lib/wardrobe";
 
-const client = new Anthropic({ apiKey: process.env.SEAM_ANTHROPIC_API_KEY });
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(request: NextRequest) {
   console.log("[insights] ANTHROPIC_API_KEY present:", !!process.env.ANTHROPIC_API_KEY);

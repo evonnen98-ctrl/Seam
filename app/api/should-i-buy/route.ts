@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
   const { item, wardrobe } = body;
 
-  const apiKey = process.env.SEAM_ANTHROPIC_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "Server misconfiguration: API key not found." }, { status: 500 });
   }
