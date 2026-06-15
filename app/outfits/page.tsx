@@ -93,21 +93,25 @@ export default function OutfitsPage() {
       const itemId = e.dataTransfer.getData("itemId");
       const item = allItems.find((i) => i.id === itemId);
       if (!item) return;
-      // Prevent duplicates across all zones
-      const alreadyAdded = Object.values(zones).some((zoneItems) =>
-        zoneItems.some((zi) => zi.item.id === itemId)
-      );
-      if (alreadyAdded) return;
-      setZones((prev) => ({
-        ...prev,
-        [toZone]: [...prev[toZone], { instanceId: crypto.randomUUID(), item }],
-      }));
+      setZones((prev) => {
+        // Prevent duplicates — check inside setter so we always read fresh state
+        const alreadyAdded = Object.values(prev).some((zoneItems) =>
+          zoneItems.some((zi) => zi.item.id === itemId)
+        );
+        if (alreadyAdded) return prev;
+        return {
+          ...prev,
+          [toZone]: [...prev[toZone], { instanceId: crypto.randomUUID(), item }],
+        };
+      });
     } else if (type === "move") {
       const fromZone = e.dataTransfer.getData("fromZone") as ZoneId;
       const instanceId = e.dataTransfer.getData("instanceId");
       setZones((prev) => {
         const movedItem = prev[fromZone].find((zi) => zi.instanceId === instanceId);
         if (!movedItem) return prev;
+        // Same zone drop — identical keys in object literal cause duplicate; just bail
+        if (fromZone === toZone) return prev;
         return {
           ...prev,
           [fromZone]: prev[fromZone].filter((zi) => zi.instanceId !== instanceId),
@@ -549,7 +553,7 @@ function DropZone({
 
       {/* Items area — fills remaining height of the box */}
       <div
-        className="flex-1 min-h-0 flex items-center px-5 pb-4 gap-3 overflow-x-auto"
+        className="flex-1 min-h-0 flex items-center px-5 pt-4 pb-5 gap-3 overflow-x-auto"
         style={{ scrollbarWidth: "none" }}
       >
         {items.length === 0 ? (
@@ -594,7 +598,7 @@ function ZoneCard({
       onDragStart={(e) => onDragStart(e, zoneId, zi.instanceId)}
       className="relative shrink-0 group cursor-grab active:cursor-grabbing select-none"
     >
-      <div className="w-[140px] aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] relative">
+      <div className="w-[108px] aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] relative">
         {zi.item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -618,12 +622,15 @@ function ZoneCard({
           </p>
         </div>
       </div>
-      {/* Remove */}
+      {/* Remove — always visible, gets darker on hover */}
       <button
+        type="button"
+        onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
         onClick={(e) => { e.stopPropagation(); onRemove(); }}
-        onMouseDown={(e) => e.stopPropagation()}
-        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
-        style={{ background: "#1E1E1E", color: "#FAF8F4" }}
+        className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 cursor-pointer z-10"
+        style={{ background: "rgba(30,20,10,0.55)", color: "#FAF8F4" }}
+        onMouseEnter={e => (e.currentTarget.style.background = "#1E1E1E")}
+        onMouseLeave={e => (e.currentTarget.style.background = "rgba(30,20,10,0.55)")}
       >
         <X size={9} strokeWidth={2.5} />
       </button>
