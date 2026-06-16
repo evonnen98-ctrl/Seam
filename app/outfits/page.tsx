@@ -5,6 +5,8 @@ import Link from "next/link";
 import { X, Check, Shirt, Bookmark, ChevronDown } from "lucide-react";
 import { type WardrobeItem, fetchItems, fetchWishlist } from "@/lib/wardrobe";
 import { loadOutfits, saveOutfits, OUTFIT_TAGS, type OutfitTag } from "@/lib/outfits";
+import { getBackgroundByTime, getAccentColor } from "@/lib/timeTheme";
+import { AppNav } from "@/components/AppNav";
 
 type TaggedItem = WardrobeItem & { source: "wardrobe" | "wishlist" };
 
@@ -185,50 +187,9 @@ export default function OutfitsPage() {
   }
 
   return (
-    <main className="h-screen flex flex-col overflow-hidden" style={{ background: "#FAF8F4" }}>
+    <main className="h-screen flex flex-col overflow-hidden" style={{ background: getBackgroundByTime() }}>
 
-      {/* Nav */}
-      <nav className="shrink-0 px-8 py-5 flex items-center justify-between border-b border-[#E2DDD6]">
-        <Link
-          href="/"
-          className="text-[#1E1E1E] text-sm uppercase"
-          style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
-        >
-          My Drobe
-        </Link>
-      </nav>
-
-      {/* Tabs */}
-      <div className="shrink-0 px-8 flex items-center gap-6 border-b border-[#E2DDD6]">
-        {[
-          { label: "Home", href: "/home" },
-          { label: "Wardrobe", href: "/wardrobe" },
-          { label: "Wishlist", href: "/wardrobe" },
-        ].map(({ label, href }) => (
-          <Link
-            key={label}
-            href={href}
-            className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-            style={{ fontFamily: "var(--font-dm-sans)" }}
-          >
-            {label}
-          </Link>
-        ))}
-        <span
-          className="pb-3 pt-4 text-sm text-[#1E1E1E] relative"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Build
-          <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
-        </span>
-        <Link
-          href="/outfits/saved"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Saved Outfits
-        </Link>
-      </div>
+      <AppNav activePage="build" />
 
       {/* Body */}
       <div className="flex-1 flex min-h-0">
@@ -517,22 +478,26 @@ function DropZone({
   onRemove: (instanceId: string) => void;
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
+  const accent = getAccentColor();
+  const isEmpty = items.length === 0;
 
   return (
     <div
-      className="flex-1 min-h-0 flex flex-col overflow-hidden transition-colors duration-150"
+      className="flex-1 min-h-0 flex flex-col overflow-hidden transition-all duration-150"
       onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
       onDragLeave={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragOver(false);
       }}
       onDrop={(e) => { setIsDragOver(false); onDrop(e); }}
       style={{
-        border: `1px solid ${isDragOver ? "#C8B89A" : "#DDD8D0"}`,
         borderRadius: "10px",
-        background: isDragOver ? "#F7F3EE" : "#FDFCFA",
+        background: isDragOver ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.65)",
+        border: isEmpty
+          ? `1.5px dashed ${isDragOver ? accent : "rgba(0,0,0,0.15)"}`
+          : `1px solid ${isDragOver ? accent : "rgba(0,0,0,0.08)"}`,
         boxShadow: isDragOver
-          ? "0 4px 20px rgba(30,20,10,0.10), 0 1px 4px rgba(30,20,10,0.06)"
-          : "0 2px 12px rgba(30,20,10,0.07), 0 1px 3px rgba(30,20,10,0.04)",
+          ? `0 4px 20px rgba(0,0,0,0.08), 0 0 0 3px ${accent}20`
+          : "0 2px 12px rgba(0,0,0,0.05)",
       }}
     >
       {/* Label row */}
@@ -564,10 +529,10 @@ function DropZone({
       >
         {items.length === 0 ? (
           <p
-            className="text-[11px] text-[#C8C3BC] select-none"
-            style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300, fontStyle: "italic" }}
+            className="text-[11px] select-none"
+            style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, fontStyle: "italic", color: accent, opacity: 0.5 }}
           >
-            Drop pieces here
+            Drop items here
           </p>
         ) : (
           items.map((zi) => (

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { RefreshCw, Plus } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { fetchItems, type WardrobeItem } from "@/lib/wardrobe";
+import { getBackgroundByTime } from "@/lib/timeTheme";
+import { AppNav } from "@/components/AppNav";
 
 const OCCASIONS = ["Work", "Casual", "Date Night", "Weekend", "Gym"] as const;
 const VIBES = ["Minimal", "Polished", "Relaxed", "Bold"] as const;
@@ -67,53 +68,8 @@ export default function TodayPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4] flex flex-col pb-16">
-
-      {/* Nav */}
-      <nav className="sticky top-0 z-10 px-8 py-5 flex items-center justify-between bg-[#FAF8F4] border-b border-[#E2DDD6]">
-        <Link
-          href="/"
-          className="text-[#1E1E1E] text-sm uppercase"
-          style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
-        >
-          My Drobe
-        </Link>
-        <Link
-          href="/onboarding"
-          className="flex items-center gap-1.5 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          <Plus size={14} />
-          Add
-        </Link>
-      </nav>
-
-      {/* Tabs */}
-      <div className="px-8 flex items-center gap-6 border-b border-[#E2DDD6]">
-        {[
-          { label: "Home", href: "/home" },
-          { label: "Wardrobe", href: "/wardrobe" },
-          { label: "Wishlist", href: "/wardrobe" },
-          { label: "Build", href: "/outfits" },
-          { label: "Saved Outfits", href: "/outfits/saved" },
-        ].map(({ label, href }) => (
-          <Link
-            key={label}
-            href={href}
-            className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-            style={{ fontFamily: "var(--font-dm-sans)" }}
-          >
-            {label}
-          </Link>
-        ))}
-        <span
-          className="pb-3 pt-4 text-sm text-[#1E1E1E] relative"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Today
-          <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
-        </span>
-      </div>
+    <main className="min-h-screen flex flex-col pb-16" style={{ background: getBackgroundByTime() }}>
+      <AppNav activePage="home" />
 
       {/* Content */}
       <div className="px-8 pt-10 max-w-2xl">

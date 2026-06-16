@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 import { type WardrobeItem, fetchItems, fetchWishlist } from "@/lib/wardrobe";
 import { loadOutfits, saveOutfits, OUTFIT_TAGS, type Outfit, type OutfitTag } from "@/lib/outfits";
+import { getBackgroundByTime, getAccentColor } from "@/lib/timeTheme";
+import { AppNav } from "@/components/AppNav";
 
 export default function SavedOutfitsPage() {
   const [outfits, setOutfits] = useState<Outfit[]>([]);
@@ -12,6 +14,7 @@ export default function SavedOutfitsPage() {
   const [activeTag, setActiveTag] = useState<OutfitTag | "all">("all");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const router = useRouter();
+  const accent = getAccentColor();
 
   useEffect(() => {
     setOutfits(loadOutfits());
@@ -33,49 +36,13 @@ export default function SavedOutfitsPage() {
     activeTag === "all" ? outfits : outfits.filter((o) => o.tag === activeTag);
 
   return (
-    <main className="min-h-screen flex flex-col pb-20" style={{ background: "#FAF8F4" }}>
+    <main className="min-h-screen flex flex-col pb-20" style={{ background: getBackgroundByTime() }}>
+      <AppNav activePage="saved" />
 
-      {/* Nav */}
-      <nav className="sticky top-0 z-10 px-8 py-5 flex items-center justify-between border-b border-[#E2DDD6]" style={{ background: "#FAF8F4" }}>
-        <Link
-          href="/"
-          className="text-[#1E1E1E] text-sm uppercase"
-          style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
-        >
-          My Drobe
-        </Link>
-      </nav>
-
-      {/* Tabs */}
-      <div className="px-8 flex items-center gap-6 border-b border-[#E2DDD6]">
-        {[
-          { label: "Home", href: "/home" },
-          { label: "Wardrobe", href: "/wardrobe" },
-          { label: "Wishlist", href: "/wardrobe" },
-          { label: "Build", href: "/outfits" },
-        ].map(({ label, href }) => (
-          <Link
-            key={label}
-            href={href}
-            className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-            style={{ fontFamily: "var(--font-dm-sans)" }}
-          >
-            {label}
-          </Link>
-        ))}
-        <span
-          className="pb-3 pt-4 text-sm text-[#1E1E1E] relative"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Saved Outfits
-          <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
-        </span>
-      </div>
-
-      {/* Page header */}
-      <div className="px-8 pt-10 pb-6 flex items-end justify-between gap-4 border-b border-[#E2DDD6]">
+      {/* Header */}
+      <div className="px-8 pt-6 pb-2 flex items-end justify-between gap-4 flex-wrap">
         <h1
-          className="text-[#1E1E1E] leading-none"
+          className="text-[#1a1a1a] leading-none"
           style={{
             fontFamily: "var(--font-cormorant)",
             fontSize: "clamp(2rem, 4vw, 2.75rem)",
@@ -86,205 +53,262 @@ export default function SavedOutfitsPage() {
           Saved Outfits
         </h1>
 
-        {/* Tag filter pills */}
-        <div className="flex items-center gap-1.5 pb-0.5 flex-wrap justify-end">
-          <button
-            onClick={() => setActiveTag("all")}
-            className="px-3.5 py-1.5 rounded-full text-[11px] border transition-all"
-            style={{
-              fontFamily: "var(--font-dm-sans)",
-              borderColor: activeTag === "all" ? "#1E1E1E" : "#D8D3CC",
-              color: activeTag === "all" ? "#1E1E1E" : "#8A847C",
-            }}
-          >
-            All
-          </button>
-          {OUTFIT_TAGS.map((tag) => (
+        {outfits.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap justify-end pb-0.5">
             <button
-              key={tag}
-              onClick={() => setActiveTag(activeTag === tag ? "all" : tag)}
+              onClick={() => setActiveTag("all")}
               className="px-3.5 py-1.5 rounded-full text-[11px] border transition-all"
               style={{
                 fontFamily: "var(--font-dm-sans)",
-                borderColor: activeTag === tag ? "#1E1E1E" : "#D8D3CC",
-                color: activeTag === tag ? "#1E1E1E" : "#8A847C",
+                borderColor: activeTag === "all" ? "#1a1a1a" : "#D8D3CC",
+                color: activeTag === "all" ? "#1a1a1a" : "#9CA3AF",
               }}
             >
-              {tag}
+              All
             </button>
-          ))}
-        </div>
+            {OUTFIT_TAGS.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(activeTag === tag ? "all" : tag)}
+                className="px-3.5 py-1.5 rounded-full text-[11px] border transition-all"
+                style={{
+                  fontFamily: "var(--font-dm-sans)",
+                  borderColor: activeTag === tag ? "#1a1a1a" : "#D8D3CC",
+                  color: activeTag === tag ? "#1a1a1a" : "#9CA3AF",
+                }}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Empty state — no outfits at all */}
       {outfits.length === 0 && (
-        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 text-center py-24">
-          <div className="w-px h-10 bg-gradient-to-b from-transparent to-[#C8C3BC]" />
+        <div className="px-8 pt-16 flex flex-col items-center text-center gap-3">
           <p
-            className="text-[#1E1E1E]"
             style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.6rem",
-              fontWeight: 400,
-              fontStyle: "italic",
+              fontFamily: "var(--font-dm-sans)",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "#1a1a1a",
             }}
           >
-            No outfits saved yet.
+            No saved outfits yet.
           </p>
           <p
-            className="text-[#8A847C] text-[13px] max-w-xs"
-            style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}
+            style={{
+              fontFamily: "var(--font-dm-sans)",
+              fontSize: "13px",
+              color: "#6B7280",
+              fontWeight: 400,
+            }}
           >
             Build your first outfit and save it here.
           </p>
-          <Link
+          <a
             href="/outfits"
-            className="mt-2 inline-flex items-center gap-2 px-6 py-2.5 text-[13px] transition-all hover:opacity-80"
-            style={{
-              fontFamily: "var(--font-dm-sans)",
-              background: "#1E1E1E",
-              color: "#FAF8F4",
-              borderRadius: "2px",
-            }}
+            className="mt-2 text-[13px]"
+            style={{ fontFamily: "var(--font-dm-sans)", color: accent, fontWeight: 500 }}
           >
-            Start building
-          </Link>
-          <div className="w-px h-8 bg-gradient-to-b from-[#C8C3BC] to-transparent" />
+            Build your first outfit →
+          </a>
         </div>
       )}
 
-      {/* Filtered empty state */}
+      {/* Filtered empty */}
       {outfits.length > 0 && filtered.length === 0 && (
         <div className="px-8 pt-8">
           <p
-            className="text-[13px] text-[#B8B3AC]"
-            style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}
+            style={{
+              fontFamily: "var(--font-dm-sans)",
+              fontSize: "13px",
+              color: "#9CA3AF",
+              fontWeight: 400,
+            }}
           >
             No {activeTag} outfits saved.
           </p>
         </div>
       )}
 
-      {/* Outfit list */}
+      {/* Horizontal card list */}
       {filtered.length > 0 && (
-        <div className="divide-y divide-[#EAE6E0]">
-          {filtered.map((outfit) => {
-            const images = outfit.items.map((oi) => itemMap.get(oi.wardrobeItemId)?.image ?? null);
-            const isConfirming = confirmDeleteId === outfit.id;
-
-            return (
-              <div
-                key={outfit.id}
-                onClick={() => router.push(`/outfits?edit=${outfit.id}`)}
-                className="px-8 py-6 cursor-pointer transition-colors"
-                style={{ background: "transparent" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#F7F4F0"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-              >
-                {/* Image strip */}
-                <div className="flex gap-2.5 mb-4">
-                  {(images.length > 0 ? images : [null]).map((img, i) => (
-                    <div
-                      key={i}
-                      className="relative shrink-0 overflow-hidden"
-                      style={{
-                        width: "90px",
-                        height: "120px",
-                        background: "#EDE9E3",
-                        borderRadius: "3px",
-                      }}
-                    >
-                      {img ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={img}
-                          alt=""
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <div className="w-5 h-5 rounded-full bg-[#D8D3CC]" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Name + tag */}
-                <div className="flex items-center gap-3 mb-3 min-w-0">
-                  <p
-                    className="text-[#1E1E1E] truncate"
-                    style={{
-                      fontFamily: "var(--font-cormorant)",
-                      fontSize: "1.2rem",
-                      fontWeight: 400,
-                    }}
-                  >
-                    {outfit.name}
-                  </p>
-                  {outfit.tag && (
-                    <span
-                      className="shrink-0 px-2.5 py-0.5 rounded-full text-[10px] text-[#8A847C]"
-                      style={{ fontFamily: "var(--font-dm-sans)", background: "#F0EBE3", letterSpacing: "0.03em" }}
-                    >
-                      {outfit.tag}
-                    </span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  {isConfirming ? (
-                    <>
-                      <span
-                        className="text-[11px] text-[#8A847C] mr-1"
-                        style={{ fontFamily: "var(--font-dm-sans)" }}
-                      >
-                        Remove permanently?
-                      </span>
-                      <button
-                        onClick={() => deleteOutfit(outfit.id)}
-                        className="px-3 py-1 rounded-full text-[11px] border transition-all hover:bg-[#C0392B] hover:text-white"
-                        style={{
-                          fontFamily: "var(--font-dm-sans)",
-                          borderColor: "#C0392B",
-                          color: "#C0392B",
-                        }}
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => setConfirmDeleteId(null)}
-                        className="px-3 py-1 rounded-full text-[11px] border border-[#D8D3CC] text-[#8A847C] hover:border-[#B8B3AC] hover:text-[#1E1E1E] transition-all"
-                        style={{ fontFamily: "var(--font-dm-sans)" }}
-                      >
-                        Keep
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => router.push(`/outfits?edit=${outfit.id}`)}
-                        className="px-3 py-1 rounded-full text-[11px] border border-[#D8D3CC] text-[#8A847C] hover:border-[#B8B3AC] hover:text-[#1E1E1E] transition-all"
-                        style={{ fontFamily: "var(--font-dm-sans)" }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setConfirmDeleteId(outfit.id)}
-                        className="px-3 py-1 rounded-full text-[11px] border border-[#D8D3CC] text-[#8A847C] hover:border-[#B8B3AC] hover:text-[#1E1E1E] transition-all"
-                        style={{ fontFamily: "var(--font-dm-sans)" }}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+        <div className="px-8 pt-2 pb-12 space-y-3">
+          {filtered.map((outfit) => (
+            <OutfitRow
+              key={outfit.id}
+              outfit={outfit}
+              itemMap={itemMap}
+              isConfirming={confirmDeleteId === outfit.id}
+              onOpen={() => router.push(`/outfits?edit=${outfit.id}`)}
+              onDeleteRequest={() => setConfirmDeleteId(outfit.id)}
+              onDeleteConfirm={() => deleteOutfit(outfit.id)}
+              onDeleteCancel={() => setConfirmDeleteId(null)}
+              accent={accent}
+            />
+          ))}
         </div>
       )}
     </main>
+  );
+}
+
+function OutfitRow({
+  outfit,
+  itemMap,
+  isConfirming,
+  onOpen,
+  onDeleteRequest,
+  onDeleteConfirm,
+  onDeleteCancel,
+  accent,
+}: {
+  outfit: Outfit;
+  itemMap: Map<string, WardrobeItem>;
+  isConfirming: boolean;
+  onOpen: () => void;
+  onDeleteRequest: () => void;
+  onDeleteConfirm: () => void;
+  onDeleteCancel: () => void;
+  accent: string;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  const images = outfit.items.map((oi) => ({
+    src: itemMap.get(oi.wardrobeItemId)?.image ?? null,
+    name: itemMap.get(oi.wardrobeItemId)?.name ?? "",
+  }));
+
+  return (
+    <div
+      className="bg-white rounded-2xl p-4 cursor-pointer border border-black/[0.04] transition-all"
+      style={{
+        boxShadow: hovered
+          ? "0 4px 24px rgba(0,0,0,0.09)"
+          : "0 2px 12px rgba(0,0,0,0.05)",
+        transform: hovered ? "translateY(-1px)" : "translateY(0)",
+        transition: "box-shadow 0.15s ease, transform 0.15s ease",
+      }}
+      onClick={onOpen}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Name + tag + delete — title row at top */}
+      <div className="flex items-center gap-2 min-w-0 mb-1.5">
+        <p
+          className="truncate flex-1"
+          style={{
+            fontFamily: "var(--font-dm-sans)",
+            fontSize: "16px",
+            fontWeight: 500,
+            color: "#1a1a1a",
+          }}
+        >
+          {outfit.name}
+        </p>
+        {outfit.tag && (
+          <span
+            className="px-2 py-0.5 rounded-full text-[10px] shrink-0"
+            style={{
+              fontFamily: "var(--font-dm-sans)",
+              background: "#F5F0EB",
+              color: "#8A847C",
+            }}
+          >
+            {outfit.tag}
+          </span>
+        )}
+        {/* Delete button */}
+        <button
+          type="button"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (isConfirming) onDeleteConfirm();
+            else onDeleteRequest();
+          }}
+          className="w-7 h-7 flex items-center justify-center rounded-full transition-all shrink-0"
+          style={{
+            background: isConfirming ? "#ef4444" : "transparent",
+            color: isConfirming ? "#fff" : "#C8C3BC",
+          }}
+          title={isConfirming ? "Confirm delete" : "Delete outfit"}
+          onMouseEnter={(e) => {
+            if (!isConfirming) {
+              (e.currentTarget as HTMLButtonElement).style.background = "#FEF2F2";
+              (e.currentTarget as HTMLButtonElement).style.color = "#ef4444";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isConfirming) {
+              (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+              (e.currentTarget as HTMLButtonElement).style.color = "#C8C3BC";
+            }
+          }}
+        >
+          <Trash2 size={13} strokeWidth={1.75} />
+        </button>
+      </div>
+
+      {/* Horizontal image strip */}
+      <div
+        className="flex gap-2 overflow-x-auto"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {images.length === 0 ? (
+          <div className="shrink-0 w-[100px] h-[126px] rounded-lg bg-[#F0EBE3] flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-[#E2DDD6]" />
+          </div>
+        ) : (
+          images.map(({ src, name }, i) => (
+            <div
+              key={i}
+              className="shrink-0 w-[100px] h-[126px] rounded-lg overflow-hidden bg-[#F0EBE3]"
+            >
+              {src ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={src}
+                  alt={name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-5 h-5 rounded-full bg-[#E2DDD6]" />
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Confirm hint */}
+      {isConfirming && (
+        <p
+          className="mt-1.5 text-[11px]"
+          style={{ fontFamily: "var(--font-dm-sans)", color: "#ef4444" }}
+        >
+          Click delete again to confirm ·{" "}
+          <button
+            className="underline"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteCancel();
+            }}
+          >
+            Cancel
+          </button>
+        </p>
+      )}
+    </div>
   );
 }

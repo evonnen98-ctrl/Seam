@@ -11,6 +11,8 @@ import {
 import { fetchItems, fetchWishlist, upsertItem, type WardrobeItem } from "@/lib/wardrobe";
 import { loadFeedback, addFeedback, getFeedbackContext, type OutfitFeedback } from "@/lib/outfitFeedback";
 import type { BuyAnalysis } from "@/app/api/should-i-buy/route";
+import { getBackgroundByTime, getAccentColor } from "@/lib/timeTheme";
+import { AppNav } from "@/components/AppNav";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -54,6 +56,10 @@ function WeatherIcon({ code }: { code: number }) {
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+}
+
+function formatWeatherLine(weather: WeatherData): string {
+  return `${weather.temp}° · ${weather.city} · ${weather.condition}`;
 }
 
 function getGreeting(): string {
@@ -196,79 +202,59 @@ export default function HomePage() {
   const filteredPinItems = wardrobeOnly
     .filter(i => pinCategory === "all" || i.category === pinCategory);
 
+  const accent = getAccentColor();
+
   return (
-    <main className="h-screen bg-[#FAF8F4] flex flex-col overflow-hidden">
+    <main className="h-screen flex flex-col overflow-hidden" style={{ background: getBackgroundByTime() }}>
 
-      {/* Nav */}
-      <nav className="shrink-0 px-8 py-5 flex items-center bg-[#FAF8F4] border-b border-[#E2DDD6] z-10">
-        <Link href="/" className="text-[#1E1E1E] text-sm uppercase" style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}>
-          My Drobe
-        </Link>
-      </nav>
-
-      {/* App tabs */}
-      <div className="shrink-0 px-4 sm:px-8 flex items-center gap-5 sm:gap-6 border-b border-[#E2DDD6] bg-[#FAF8F4] overflow-x-auto">
-        <button onClick={() => setView("home")} className="pb-3 pt-4 text-sm transition-colors relative text-[#1E1E1E] whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>
-          Home
-          {view === "home" && <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />}
-        </button>
-        <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Wardrobe</Link>
-        <Link href="/wardrobe" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Wishlist</Link>
-        <Link href="/outfits" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Build</Link>
-        <Link href="/outfits/saved" className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors whitespace-nowrap shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>Saved Outfits</Link>
-      </div>
+      <AppNav activePage="home" onHomeClick={() => setView("home")} />
 
       {/* Content */}
       <div className="flex-1 min-h-0 overflow-hidden">
 
         {/* ── Home landing ── */}
         {view === "home" && (
-          <div className="h-full overflow-y-auto">
-            <div className="max-w-2xl mx-auto px-5 sm:px-10 pt-8 sm:pt-12 pb-16">
+          <div className="h-full overflow-y-auto flex flex-col">
+            <div className="flex-1 flex flex-col items-center justify-center px-5 sm:px-10 py-12">
+              <div className="w-full max-w-lg">
 
-              {/* Greeting */}
-              <p style={{ ...fadeIn(visible, 0), fontFamily: "var(--font-cormorant)", fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 400, fontStyle: "italic", color: "#1E1E1E", letterSpacing: "-0.01em", marginBottom: "0.6rem" }}>
-                {getGreeting()}
-              </p>
+                {/* Greeting */}
+                <h1 style={{ ...fadeIn(visible, 0), fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.25rem, 5vw, 3rem)", fontWeight: 300, color: "#1a1a1a", letterSpacing: "-0.01em", marginBottom: "0.5rem", lineHeight: 1.1 }}>
+                  {getGreeting()}
+                </h1>
 
-              {/* Date */}
-              <p style={{ ...fadeIn(visible, 0.1), fontFamily: "var(--font-dm-sans)", fontSize: "0.75rem", fontWeight: 300, color: "#B8B3AC", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1.75rem" }}>
-                {formatDate(new Date())}
-              </p>
+                {/* Date */}
+                <p style={{ ...fadeIn(visible, 0.08), fontFamily: "var(--font-dm-sans)", fontSize: "13px", fontWeight: 400, color: "#9CA3AF", letterSpacing: "0.05em", marginBottom: weather ? "0.3rem" : "2.5rem" }}>
+                  {formatDate(new Date())}
+                </p>
 
-              {/* Weather */}
-              <div style={{ ...fadeIn(visible, 0.18), marginBottom: "3rem", minHeight: "4rem" }}>
-                {weather ? (
-                  <div className="flex items-center gap-4">
-                    <WeatherIcon code={weather.conditionCode} />
-                    <div>
-                      <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.8rem, 5vw, 3.5rem)", fontWeight: 400, color: "#1E1E1E", lineHeight: 1, letterSpacing: "-0.02em" }}>
-                        {weather.temp}°
-                      </p>
-                      <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", fontWeight: 300, color: "#8A847C", letterSpacing: "0.02em", marginTop: "0.25rem" }}>
-                        {weather.city} · {weather.condition}
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
+                {/* Weather — compact inline */}
+                {weather && (
+                  <p style={{ ...fadeIn(visible, 0.12), fontFamily: "var(--font-dm-sans)", fontSize: "13px", fontWeight: 400, color: "#B8B3AC", letterSpacing: "0.02em", marginBottom: "2.5rem" }}>
+                    {formatWeatherLine(weather)}
+                  </p>
+                )}
+
+                {/* Two action cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8" style={fadeIn(visible, 0.2)}>
+                  <ActionCard
+                    icon={<Shirt size={28} strokeWidth={1.25} />}
+                    title="Plan today's outfit"
+                    subtitle="Pick an occasion and My Drobe will dress you."
+                    onClick={() => setView("outfit")}
+                    accent={accent}
+                  />
+                  <ActionCard
+                    icon={<Tag size={28} strokeWidth={1.25} />}
+                    title="Should I buy this?"
+                    subtitle="Paste a link. Get an honest answer."
+                    onClick={() => setView("buy")}
+                    accent={accent}
+                  />
+                </div>
+
+
               </div>
-
-              {/* Two cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={fadeIn(visible, 0.28)}>
-                <ActionCard
-                  icon={<Shirt size={20} strokeWidth={1.5} className="text-[#8A847C]" />}
-                  title="Plan today's outfit"
-                  subtitle="Pick an occasion and My Drobe will dress you."
-                  onClick={() => setView("outfit")}
-                />
-                <ActionCard
-                  icon={<Tag size={20} strokeWidth={1.5} className="text-[#8A847C]" />}
-                  title="Should I buy this?"
-                  subtitle="Paste a link. Get an honest answer."
-                  onClick={() => setView("buy")}
-                />
-              </div>
-
             </div>
           </div>
         )}
@@ -278,7 +264,7 @@ export default function HomePage() {
           <div className="h-full flex flex-col">
 
             {/* Back bar */}
-            <div className="shrink-0 px-8 py-3 border-b border-[#E2DDD6] bg-[#FAF8F4] flex items-center">
+            <div className="shrink-0 px-8 py-3 border-b border-black/[0.06] bg-white/50 backdrop-blur-sm flex items-center">
               <button
                 onClick={() => setView("home")}
                 className="flex items-center gap-1.5 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
@@ -500,7 +486,7 @@ export default function HomePage() {
         {view === "buy" && (
           <div className="h-full flex flex-col">
             {/* Back bar */}
-            <div className="shrink-0 px-8 py-3 border-b border-[#E2DDD6] bg-[#FAF8F4] flex items-center">
+            <div className="shrink-0 px-8 py-3 border-b border-black/[0.06] bg-white/50 backdrop-blur-sm flex items-center">
               <button
                 onClick={() => setView("home")}
                 className="flex items-center gap-1.5 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
@@ -523,30 +509,53 @@ export default function HomePage() {
 
 // ── Action card ───────────────────────────────────────────────────────────────
 
-function ActionCard({ icon, title, subtitle, onClick }: {
+function ActionCard({ icon, title, subtitle, onClick, accent }: {
   icon: React.ReactNode;
   title: string;
   subtitle: string;
   onClick: () => void;
+  accent: string;
 }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
-      className="text-left flex flex-col gap-7 p-8 rounded-2xl bg-white hover:bg-[#F7F4F0] transition-all group"
-      style={{ minHeight: "16rem", boxShadow: "0 1px 3px rgba(30,20,10,0.06), 0 4px 16px rgba(30,20,10,0.04)" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        textAlign: "left",
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+        padding: "24px",
+        background: "white",
+        borderRadius: "16px",
+        border: "1px solid rgba(0,0,0,0.06)",
+        boxShadow: hovered ? "0 8px 30px rgba(0,0,0,0.10)" : "0 2px 20px rgba(0,0,0,0.06)",
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition: "all 0.2s ease",
+        cursor: "pointer",
+        width: "100%",
+      }}
     >
-      <div className="w-10 h-10 rounded-full bg-[#F2EDE5] group-hover:bg-[#EAE4DB] flex items-center justify-center transition-colors shrink-0">
+      <div style={{
+        width: 48, height: 48, borderRadius: "50%",
+        background: hovered ? `${accent}20` : "#f5f5f5",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        transition: "background 0.2s ease",
+        color: hovered ? accent : "#9CA3AF",
+        flexShrink: 0,
+      }}>
         {icon}
       </div>
-      <div className="flex-1">
-        <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.6rem", fontWeight: 400, color: "#1E1E1E", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+      <div>
+        <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "18px", fontWeight: 500, color: "#1a1a1a", marginBottom: "6px", lineHeight: 1.2 }}>
           {title}
         </p>
-        <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#8A847C", fontWeight: 300, marginTop: "0.4rem", lineHeight: 1.55 }}>
+        <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#6B7280", fontWeight: 400, lineHeight: 1.55 }}>
           {subtitle}
         </p>
       </div>
-      <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.88rem", color: "#C8C3BC", transition: "color 0.2s" }} className="group-hover:text-[#8A847C]">→</span>
     </button>
   );
 }

@@ -7,6 +7,8 @@ import { type WardrobeItem, fetchItems, fetchWishlist, upsertItem, deleteItemByI
 import { inferCategory } from "@/lib/categorize";
 import { AddItemModal } from "@/components/AddItemModal";
 import { CURRENCIES, type CurrencyCode, loadCurrencyPreference, saveCurrencyPreference, displayPrice, itemPriceUSD, fromUSD, getSymbol, detectPriceCurrency, parsePriceAmount, toUSD } from "@/lib/currency";
+import { getBackgroundByTime, getAccentColor } from "@/lib/timeTheme";
+import { AppNav } from "@/components/AppNav";
 
 type SortKey = "newest" | "oldest" | "price-high" | "price-low" | "az";
 
@@ -230,58 +232,15 @@ export default function WardrobePage() {
     }
   }
 
-  return (
-    <main className="min-h-screen bg-[#FAF8F4] flex flex-col pb-32">
-      {/* Nav */}
-      <nav className="sticky top-0 z-10 px-8 py-5 flex items-center bg-[#FAF8F4] border-b border-[#E2DDD6]">
-        <Link
-          href="/"
-          className="text-[#1E1E1E] text-sm uppercase"
-          style={{ fontFamily: "var(--font-dm-sans)", letterSpacing: "0.2em" }}
-        >
-          My Drobe
-        </Link>
-      </nav>
+  const accent = getAccentColor();
 
-      {/* Tabs */}
-      <div className="px-8 flex items-center gap-6 border-b border-[#E2DDD6]">
-        <Link
-          href="/home"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Home
-        </Link>
-        {(["wardrobe", "wishlist"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => { setTab(t); setActiveCategory(null); }}
-            className={`pb-3 pt-4 text-sm transition-colors relative ${
-              tab === t ? "text-[#1E1E1E]" : "text-[#8A847C] hover:text-[#1E1E1E]"
-            }`}
-            style={{ fontFamily: "var(--font-dm-sans)" }}
-          >
-            {t === "wardrobe" ? "Wardrobe" : "Wishlist"}
-            {tab === t && (
-              <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#1E1E1E]" />
-            )}
-          </button>
-        ))}
-        <Link
-          href="/outfits"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Build
-        </Link>
-        <Link
-          href="/outfits/saved"
-          className="pb-3 pt-4 text-sm text-[#8A847C] hover:text-[#1E1E1E] transition-colors"
-          style={{ fontFamily: "var(--font-dm-sans)" }}
-        >
-          Saved Outfits
-        </Link>
-      </div>
+  return (
+    <main className="min-h-screen flex flex-col pb-32" style={{ background: getBackgroundByTime() }}>
+      <AppNav
+        activePage={tab === "wardrobe" ? "wardrobe" : "wishlist"}
+        onWardrobeClick={() => { setTab("wardrobe"); setActiveCategory(null); }}
+        onWishlistClick={() => { setTab("wishlist"); setActiveCategory(null); }}
+      />
 
       {/* Header */}
       <div className="px-8 pt-10 pb-4 flex items-start justify-between gap-4">
@@ -873,8 +832,10 @@ function ItemCard({ item, list, onClick, currency = "USD" }: { item: WardrobeIte
   const priceDisplay = usdAmount != null ? displayPrice(usdAmount, currency) : item.price;
 
   return (
-    <div className="group cursor-pointer" onClick={onClick}>
-      <div className="relative aspect-[3/4] rounded-xl mb-3 overflow-hidden bg-[#F0EBE3] transition-all group-hover:shadow-md">
+    <div className="group cursor-pointer" onClick={onClick} style={{ transition: "transform 0.15s ease" }}
+      onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-2px)")}
+      onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+      <div className="relative aspect-[3/4] rounded-xl mb-3 overflow-hidden bg-[#F0EBE3] transition-all group-hover:shadow-lg">
         {item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -903,17 +864,17 @@ function ItemCard({ item, list, onClick, currency = "USD" }: { item: WardrobeIte
       </div>
 
       <div className="px-0.5">
-        <p className="text-[#1E1E1E] text-xs font-medium truncate mb-0.5" style={{ fontFamily: "var(--font-dm-sans)" }}>
+        <p className="truncate mb-0.5" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "14px", fontWeight: 500, color: "#1a1a1a" }}>
           {item.name}
         </p>
         <div className="flex items-center justify-between gap-1">
           {item.brand && (
-            <span className="text-[#8A847C] text-xs truncate" style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}>
+            <span className="truncate" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "12px", color: "#6B7280", fontWeight: 400 }}>
               {item.brand}
             </span>
           )}
           {priceDisplay && (
-            <span className="text-[#3A3530] text-xs shrink-0" style={{ fontFamily: "var(--font-dm-sans)" }}>
+            <span className="shrink-0" style={{ fontFamily: "var(--font-dm-sans)", fontSize: "12px", color: "#6B7280" }}>
               {priceDisplay}
             </span>
           )}
