@@ -1,33 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Drobe
 
-## Getting Started
+An AI-powered digital wardrobe helper designed to organize clothing items and give contextual shopping recommendations based on what you already own.
 
-First, run the development server:
+👉 **[Live Demo](https://seam-1q3l.vercel.app/home)**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Why I built this
+To explore how to combine web data extraction with LLM reasoning to make online shopping more intentional and less overwhelming.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
+* **Web scraping integration:** Pulls item details straight from online retail pages.
+* **Contextual matchmaker:** Uses AI to weigh user budget and style inputs against existing wardrobe data.
+* **Smart recommendations:** Suggests whether an item actually fits your current collection before you buy it.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
+React (Vite), TypeScript, Node.js, Express, Claude API, Tailwind CSS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Key Learnings
+* **Web scraping nuances:** Learned how to extract clean data (like product names, prices, brands, and images) across different website layouts and structures.
+* **Combining data streams:** Successfully wired together automated data extraction, manual user inputs, and LLM reasoning to generate cohesive, accurate purchase advice.
 
 ## Deploy on Vercel
 
