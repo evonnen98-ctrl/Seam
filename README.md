@@ -5,7 +5,7 @@ An AI-powered digital wardrobe helper designed to organize clothing items and gi
 👉 **[Live Demo](https://seam-1q3l.vercel.app/home)**
 
 ## Why I built this
-To explore how to combine web data extraction with LLM reasoning to make online shopping more intentional and less overwhelming.
+I built this to solve a personal frustration: I was tired of keeping track of potential clothes shopping items by saving links individually in a browser bookmark folder. I wanted to see all my items altogether on one single page. Ultimately, the goal was to create a tool that helps me look at my existing wardrobe as a whole to stop impulse shopping and make more intentional buying decisions.
 
 ## Features
 * **Web scraping integration:** Pulls item details straight from online retail pages.
@@ -18,9 +18,3 @@ React (Vite), TypeScript, Node.js, Express, Claude API, Tailwind CSS
 ## Key Learnings
 * **Web scraping nuances:** Learned how to extract clean data (like product names, prices, brands, and images) across different website layouts and structures.
 * **Combining data streams:** Successfully wired together automated data extraction, manual user inputs, and LLM reasoning to generate cohesive, accurate purchase advice.
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
