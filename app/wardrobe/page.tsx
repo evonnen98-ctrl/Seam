@@ -248,10 +248,10 @@ export default function WardrobePage() {
           <h1
             className="text-[#1E1E1E] leading-none mb-1"
             style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "clamp(2rem, 4vw, 2.75rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.01em",
+              fontFamily: "var(--font-unbounded)",
+              fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)",
+              fontWeight: 700,
+              letterSpacing: "-0.02em",
             }}
           >
             {tab === "wardrobe" ? "Wardrobe" : "Wishlist"}
@@ -261,7 +261,7 @@ export default function WardrobePage() {
           <SortDropdown value={sortKey} onChange={setSortKey} />
           <button
             onPointerDown={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 text-sm px-4 py-2.5 bg-[#1E1E1E] text-[#FAF8F4] rounded-full hover:bg-[#3A3530] transition-colors"
+            className="flex items-center gap-1.5 text-sm px-4 py-2.5 bg-[#D98E54] text-white rounded-full hover:bg-[#c07d43] transition-colors"
             style={{ fontFamily: "var(--font-dm-sans)", touchAction: "manipulation" }}
           >
             Add item
@@ -278,7 +278,7 @@ export default function WardrobePage() {
               onClick={() => setActiveCategory(null)}
               className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs transition-all border ${
                 activeCategory === null
-                  ? "border-[#3A3530] text-[#1E1E1E]"
+                  ? "border-[#D98E54] text-[#1E1E1E]"
                   : "border-transparent text-[#8A847C] hover:text-[#1E1E1E] hover:bg-[#F0EBE3]"
               }`}
               style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -291,7 +291,7 @@ export default function WardrobePage() {
                 onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs transition-all border ${
                   activeCategory === cat
-                    ? "border-[#3A3530] text-[#1E1E1E]"
+                    ? "border-[#D98E54] text-[#1E1E1E]"
                     : "border-transparent text-[#8A847C] hover:text-[#1E1E1E] hover:bg-[#F0EBE3]"
                 }`}
                 style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -339,7 +339,7 @@ export default function WardrobePage() {
             </p>
             <button
               onPointerDown={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E1E1E] text-[#FAF8F4] rounded-full text-sm hover:bg-[#3A3530] transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#D98E54] text-white rounded-full text-sm hover:bg-[#c07d43] transition-colors"
               style={{ fontFamily: "var(--font-dm-sans)", touchAction: "manipulation" }}
             >
               <Plus size={14} />
@@ -832,10 +832,10 @@ function ItemCard({ item, list, onClick, currency = "USD" }: { item: WardrobeIte
   const priceDisplay = usdAmount != null ? displayPrice(usdAmount, currency) : item.price;
 
   return (
-    <div className="group cursor-pointer" onClick={onClick} style={{ transition: "transform 0.15s ease" }}
+    <div className="item-card group cursor-pointer" onClick={onClick} style={{ transition: "transform 0.15s ease" }}
       onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-2px)")}
       onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-      <div className="relative aspect-[3/4] rounded-xl mb-3 overflow-hidden bg-[#F0EBE3] transition-all group-hover:shadow-lg">
+      <div className="item-card-thumb relative aspect-[3/4] rounded-[20px] mb-3 overflow-hidden bg-[#F0EBE3] transition-all">
         {item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

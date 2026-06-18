@@ -44,10 +44,10 @@ export default function SavedOutfitsPage() {
         <h1
           className="text-[#1a1a1a] leading-none"
           style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "clamp(2rem, 4vw, 2.75rem)",
-            fontWeight: 400,
-            letterSpacing: "-0.01em",
+            fontFamily: "var(--font-unbounded)",
+            fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)",
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
           }}
         >
           Saved Outfits
@@ -60,7 +60,7 @@ export default function SavedOutfitsPage() {
               className="px-3.5 py-1.5 rounded-full text-[11px] border transition-all"
               style={{
                 fontFamily: "var(--font-dm-sans)",
-                borderColor: activeTag === "all" ? "#1a1a1a" : "#D8D3CC",
+                borderColor: activeTag === "all" ? "#D98E54" : "#D8D3CC",
                 color: activeTag === "all" ? "#1a1a1a" : "#9CA3AF",
               }}
             >
@@ -73,7 +73,7 @@ export default function SavedOutfitsPage() {
                 className="px-3.5 py-1.5 rounded-full text-[11px] border transition-all"
                 style={{
                   fontFamily: "var(--font-dm-sans)",
-                  borderColor: activeTag === tag ? "#1a1a1a" : "#D8D3CC",
+                  borderColor: activeTag === tag ? "#D98E54" : "#D8D3CC",
                   color: activeTag === tag ? "#1a1a1a" : "#9CA3AF",
                 }}
               >
@@ -183,10 +183,11 @@ function OutfitRow({
 
   return (
     <div
-      className="bg-white rounded-2xl p-4 cursor-pointer border border-black/[0.04] transition-all"
+      className="bg-white p-4 cursor-pointer border border-black/[0.04] transition-all"
       style={{
+        borderRadius: "20px",
         boxShadow: hovered
-          ? "0 4px 24px rgba(0,0,0,0.09)"
+          ? "0 8px 24px rgba(217, 142, 84, 0.12)"
           : "0 2px 12px rgba(0,0,0,0.05)",
         transform: hovered ? "translateY(-1px)" : "translateY(0)",
         transition: "box-shadow 0.15s ease, transform 0.15s ease",
@@ -261,14 +262,14 @@ function OutfitRow({
         style={{ scrollbarWidth: "none" }}
       >
         {images.length === 0 ? (
-          <div className="shrink-0 w-[100px] h-[126px] rounded-lg bg-[#F0EBE3] flex items-center justify-center">
+          <div className="shrink-0 w-[100px] h-[126px] rounded-[20px] bg-[#F0EBE3] flex items-center justify-center">
             <div className="w-5 h-5 rounded-full bg-[#E2DDD6]" />
           </div>
         ) : (
           images.map(({ src, name }, i) => (
             <div
               key={i}
-              className="shrink-0 w-[100px] h-[126px] rounded-lg overflow-hidden bg-[#F0EBE3]"
+              className="shrink-0 w-[100px] h-[126px] rounded-[20px] overflow-hidden bg-[#F0EBE3]"
             >
               {src ? (
                 // eslint-disable-next-line @next/next/no-img-element

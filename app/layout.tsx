@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans, Unbounded } from "next/font/google";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -15,6 +15,13 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500"],
 });
 
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "optional",
+});
+
 export const metadata: Metadata = {
   title: "My Drobe — Your wardrobe, understood.",
   description: "Personal wardrobe intelligence.",
@@ -26,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${dmSans.variable} ${unbounded.variable}`}>
       <body className="min-h-screen">{children}</body>
     </html>
   );

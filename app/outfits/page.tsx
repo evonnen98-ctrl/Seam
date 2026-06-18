@@ -277,20 +277,20 @@ export default function OutfitsPage() {
                         if (e.key === "Escape") handleCancelSave();
                       }}
                       placeholder="Name this outfit…"
-                      className="px-3 py-1.5 bg-white border border-[#E2DDD6] text-xs text-[#1E1E1E] placeholder-[#C8B89A] outline-none focus:border-[#B8B3AC] transition-colors w-40"
+                      className="px-3 py-1.5 rounded-full bg-white border border-[#E2DDD6] text-xs text-[#1E1E1E] placeholder-[#C8B89A] outline-none focus:border-[#B8B3AC] transition-colors w-40"
                       style={{ fontFamily: "var(--font-dm-sans)" }}
                     />
                     <button
                       onClick={handleSave}
                       disabled={!outfitName.trim()}
-                      className="px-3.5 py-1.5 bg-[#1E1E1E] text-[#FAF8F4] text-xs hover:bg-[#3A3530] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="px-3.5 py-1.5 rounded-full bg-[#D98E54] text-white text-xs hover:bg-[#c07d43] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       style={{ fontFamily: "var(--font-dm-sans)" }}
                     >
                       {editingId ? "Update" : "Save"}
                     </button>
                     <button
                       onClick={handleCancelSave}
-                      className="px-3.5 py-1.5 text-xs border border-[#E2DDD6] text-[#8A847C] hover:border-[#B8B3AC] hover:text-[#1E1E1E] transition-colors"
+                      className="px-3.5 py-1.5 rounded-full text-xs border border-[#E2DDD6] text-[#8A847C] hover:border-[#B8B3AC] hover:text-[#1E1E1E] transition-colors"
                       style={{ fontFamily: "var(--font-dm-sans)" }}
                     >
                       Cancel
@@ -317,7 +317,7 @@ export default function OutfitsPage() {
                 <button
                   onClick={handleStartSaving}
                   disabled={totalItems === 0}
-                  className="px-4 py-1.5 bg-[#1E1E1E] text-[#FAF8F4] text-xs hover:bg-[#3A3530] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="px-4 py-1.5 rounded-full bg-[#D98E54] text-white text-xs hover:bg-[#c07d43] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   style={{ fontFamily: "var(--font-dm-sans)" }}
                 >
                   Save outfit
@@ -386,7 +386,7 @@ function PickerDropdown({
         onClick={() => setOpen((o) => !o)}
         className={`w-full flex items-center justify-between gap-1 px-2 py-1.5 text-xs transition-colors border-b ${
           isFiltered
-            ? "border-[#3A3530] text-[#1E1E1E]"
+            ? "border-[#D98E54] text-[#1E1E1E]"
             : "border-[#D8D3CC] text-[#8A847C] hover:text-[#1E1E1E] hover:border-[#B8B3AC]"
         }`}
         style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -395,7 +395,7 @@ function PickerDropdown({
         <ChevronDown size={10} className={`shrink-0 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute left-0 top-full mt-1 w-full bg-white border border-[#E2DDD6] shadow-sm overflow-hidden z-30">
+        <div className="absolute left-0 top-full mt-1 w-full bg-white border border-[#E2DDD6] rounded-xl shadow-sm overflow-hidden z-30">
           {options.map((opt) => (
             <button
               key={opt.value}
@@ -433,7 +433,7 @@ function PickerCard({
       onDragStart={(e) => !inZone && onDragStart(e, item.id)}
       className={`select-none transition-opacity ${inZone ? "opacity-30 cursor-not-allowed" : "cursor-grab active:cursor-grabbing"}`}
     >
-      <div className={`relative aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] transition-opacity ${inZone ? "" : "hover:opacity-80"}`}>
+      <div className={`relative aspect-[3/4] rounded-[20px] overflow-hidden bg-[#EDE9E3] transition-opacity ${inZone ? "" : "hover:opacity-80"}`}>
         {item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -490,7 +490,7 @@ function DropZone({
       }}
       onDrop={(e) => { setIsDragOver(false); onDrop(e); }}
       style={{
-        borderRadius: "10px",
+        borderRadius: "20px",
         background: isDragOver ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.65)",
         border: isEmpty
           ? `1.5px dashed ${isDragOver ? accent : "rgba(0,0,0,0.15)"}`
@@ -569,7 +569,7 @@ function ZoneCard({
       onDragStart={(e) => onDragStart(e, zoneId, zi.instanceId)}
       className="relative shrink-0 group cursor-grab active:cursor-grabbing select-none"
     >
-      <div className="w-[108px] aspect-[3/4] rounded-sm overflow-hidden bg-[#EDE9E3] relative">
+      <div className="w-[108px] aspect-[3/4] rounded-[20px] overflow-hidden bg-[#EDE9E3] relative">
         {zi.item.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

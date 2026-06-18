@@ -7,6 +7,7 @@
   --charcoal-mid: #3A3530;
   --muted: #8A847C;
   --border: #E2DDD6;
+  --accent: #D98E54;
 }
 
 @theme inline {
@@ -16,8 +17,14 @@
   --color-charcoal-mid: var(--charcoal-mid);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-accent: var(--accent);
   --font-heading: var(--font-cormorant);
   --font-body: var(--font-dm-sans);
+  --font-display: var(--font-unbounded);
+}
+
+.item-card:hover .item-card-thumb {
+  box-shadow: 0 8px 24px rgba(217, 142, 84, 0.12);
 }
 
 html {
