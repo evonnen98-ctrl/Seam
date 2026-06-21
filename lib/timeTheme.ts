@@ -3,9 +3,9 @@ export function getBackgroundByTime(): string {
 }
 
 export function getAccentColor(): string {
-  return "#D98E54";
+  return "#A05215";
 }
 
 export function getAccentLight(): string {
-  return "rgba(217, 142, 84, 0.12)";
+  return "rgba(160, 82, 21, 0.12)";
 }

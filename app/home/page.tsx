@@ -205,12 +205,12 @@ export default function HomePage() {
   const accent = getAccentColor();
 
   return (
-    <main className="h-screen flex flex-col overflow-hidden" style={{ background: view === "home" ? "radial-gradient(circle at 50% 35%, #fdf3e8 0%, #fdf8f3 45%, #ffffff 100%)" : getBackgroundByTime() }}>
+    <main className="h-screen flex flex-col overflow-hidden" style={{ background: getBackgroundByTime() }}>
 
       <AppNav activePage="home" onHomeClick={() => setView("home")} />
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden" style={view === "home" ? { background: "url('/homepagephoto.jpg') center center / cover no-repeat" } : undefined}>
 
         {/* ── Home landing ── */}
         {view === "home" && (
@@ -219,17 +219,17 @@ export default function HomePage() {
               <div className="w-full max-w-lg flex flex-col items-center text-center">
 
                 {/* Greeting */}
-                <h1 style={{ opacity: visible ? 1 : 0, transition: "opacity 0.5s ease 0s", fontFamily: "var(--font-unbounded)", fontSize: "clamp(1.5rem, 3.5vw, 2.25rem)", fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.02em", marginBottom: "0.5rem", lineHeight: 1.15 }}>
+                <h1 style={{ opacity: visible ? 1 : 0, transition: "opacity 0.5s ease 0s", fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 300, color: "#1a1a1a", letterSpacing: "0.01em", marginBottom: "0.5rem", lineHeight: 1.2 }}>
                   {getGreeting()}
                 </h1>
 
                 {/* Date */}
-                <p style={{ ...fadeIn(visible, 0.08), fontFamily: "var(--font-dm-sans)", fontSize: "12px", fontWeight: 400, color: "#B8B3AC", letterSpacing: "0.06em", marginBottom: "0.25rem" }}>
+                <p style={{ ...fadeIn(visible, 0.08), fontFamily: "var(--font-dm-sans)", fontSize: "12px", fontWeight: 400, color: "#8A847C", letterSpacing: "0.06em", marginBottom: "0.25rem" }}>
                   {formatDate(new Date())}
                 </p>
 
                 {/* Weather — always in DOM so layout height never changes; fades in once loaded */}
-                <p style={{ opacity: weather && visible ? 1 : 0, transition: "opacity 0.5s ease 0.12s", fontFamily: "var(--font-dm-sans)", fontSize: "12px", fontWeight: 400, color: "#C8C3BC", letterSpacing: "0.02em", marginBottom: "2.75rem" }}>
+                <p style={{ opacity: weather && visible ? 1 : 0, transition: "opacity 0.5s ease 0.12s", fontFamily: "var(--font-dm-sans)", fontSize: "12px", fontWeight: 400, color: "#8A847C", letterSpacing: "0.02em", marginBottom: "2.75rem" }}>
                   {weather ? formatWeatherLine(weather) : " "}
                 </p>
 
@@ -386,7 +386,7 @@ export default function HomePage() {
                     <button
                       onClick={() => getDressed()}
                       disabled={!canSubmit || outfitLoading}
-                      className={`w-full py-3 rounded-full text-sm transition-all ${canSubmit && !outfitLoading ? "bg-[#D98E54] text-white hover:bg-[#c07d43]" : "bg-[#E2DDD6] text-[#B8B3AC] cursor-not-allowed"}`}
+                      className={`w-full py-3 rounded-full text-sm transition-all ${canSubmit && !outfitLoading ? "bg-[#A05215] text-white hover:bg-[#884510]" : "bg-[#E2DDD6] text-[#B8B3AC] cursor-not-allowed"}`}
                       style={{ fontFamily: "var(--font-dm-sans)" }}
                     >
                       Get dressed →
@@ -401,7 +401,7 @@ export default function HomePage() {
                   <div className="h-full flex flex-col items-center justify-center px-12 text-center gap-4">
                     <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.4rem", fontWeight: 400, fontStyle: "italic", color: "#8A847C" }}>Your wardrobe is empty.</p>
                     <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#B8B3AC", fontWeight: 300 }}>Add some pieces first and My Drobe will dress you.</p>
-                    <Link href="/onboarding" className="mt-1 px-5 py-2.5 rounded-full text-sm bg-[#D98E54] text-white hover:bg-[#c07d43] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                    <Link href="/onboarding" className="mt-1 px-5 py-2.5 rounded-full text-sm bg-[#A05215] text-white hover:bg-[#884510] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
                       Add to wardrobe
                     </Link>
                   </div>
@@ -521,15 +521,16 @@ function ActionCard({ icon, title, subtitle, onClick, accent }: {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        textAlign: "left",
+        textAlign: "center",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
         gap: "20px",
         padding: "24px",
         background: "white",
         borderRadius: "20px",
         border: "1px solid rgba(0,0,0,0.05)",
-        boxShadow: hovered ? "0 6px 20px rgba(217, 142, 84, 0.10)" : "0 1px 8px rgba(0,0,0,0.04)",
+        boxShadow: hovered ? "0 6px 20px rgba(160, 82, 21, 0.10)" : "0 1px 8px rgba(0,0,0,0.04)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
         transition: "all 0.2s ease",
         cursor: "pointer",
@@ -672,7 +673,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
             <button
               onClick={check}
               disabled={!url.trim() || loading}
-              className="px-5 py-3 bg-[#D98E54] text-white rounded-full text-sm transition-all hover:bg-[#c07d43] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
+              className="px-5 py-3 bg-[#A05215] text-white rounded-full text-sm transition-all hover:bg-[#884510] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
               style={{ fontFamily: "var(--font-dm-sans)" }}
             >
               {loading ? <><Loader2 size={13} className="animate-spin" />Checking…</> : "Check it →"}
@@ -720,7 +721,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
             <button
               onClick={checkManual}
               disabled={!manualName.trim() || loading}
-              className="self-start px-5 py-3 bg-[#D98E54] text-white rounded-full text-sm hover:bg-[#c07d43] transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+              className="self-start px-5 py-3 bg-[#A05215] text-white rounded-full text-sm hover:bg-[#884510] transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
               style={{ fontFamily: "var(--font-dm-sans)" }}
             >
               {loading ? <><Loader2 size={13} className="animate-spin" />Checking…</> : "Check it →"}
@@ -838,7 +839,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
                 {!added ? (
                   <div className="flex items-center gap-2.5">
                     <button onClick={() => addItem("wardrobe")}
-                      className="px-4 py-2 rounded-full text-xs bg-[#D98E54] text-white hover:bg-[#c07d43] transition-colors"
+                      className="px-4 py-2 rounded-full text-xs bg-[#A05215] text-white hover:bg-[#884510] transition-colors"
                       style={{ fontFamily: "var(--font-dm-sans)" }}>
                       Add to Wardrobe
                     </button>

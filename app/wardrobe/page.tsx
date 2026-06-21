@@ -248,10 +248,10 @@ export default function WardrobePage() {
           <h1
             className="text-[#1E1E1E] leading-none mb-1"
             style={{
-              fontFamily: "var(--font-unbounded)",
-              fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)",
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
+              fontFamily: "var(--font-cormorant)",
+              fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+              fontWeight: 400,
+              letterSpacing: "0.01em",
             }}
           >
             {tab === "wardrobe" ? "Wardrobe" : "Wishlist"}
@@ -261,7 +261,7 @@ export default function WardrobePage() {
           <SortDropdown value={sortKey} onChange={setSortKey} />
           <button
             onPointerDown={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 text-sm px-4 py-2.5 bg-[#D98E54] text-white rounded-full hover:bg-[#c07d43] transition-colors"
+            className="flex items-center gap-1.5 text-sm px-4 py-2.5 bg-[#A05215] text-white rounded-full hover:bg-[#884510] transition-colors"
             style={{ fontFamily: "var(--font-dm-sans)", touchAction: "manipulation" }}
           >
             Add item
@@ -278,7 +278,7 @@ export default function WardrobePage() {
               onClick={() => setActiveCategory(null)}
               className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs transition-all border ${
                 activeCategory === null
-                  ? "border-[#D98E54] text-[#1E1E1E]"
+                  ? "border-[#A05215] text-[#1E1E1E]"
                   : "border-transparent text-[#8A847C] hover:text-[#1E1E1E] hover:bg-[#F0EBE3]"
               }`}
               style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -291,7 +291,7 @@ export default function WardrobePage() {
                 onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs transition-all border ${
                   activeCategory === cat
-                    ? "border-[#D98E54] text-[#1E1E1E]"
+                    ? "border-[#A05215] text-[#1E1E1E]"
                     : "border-transparent text-[#8A847C] hover:text-[#1E1E1E] hover:bg-[#F0EBE3]"
                 }`}
                 style={{ fontFamily: "var(--font-dm-sans)" }}
@@ -339,7 +339,7 @@ export default function WardrobePage() {
             </p>
             <button
               onPointerDown={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#D98E54] text-white rounded-full text-sm hover:bg-[#c07d43] transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#A05215] text-white rounded-full text-sm hover:bg-[#884510] transition-colors"
               style={{ fontFamily: "var(--font-dm-sans)", touchAction: "manipulation" }}
             >
               <Plus size={14} />

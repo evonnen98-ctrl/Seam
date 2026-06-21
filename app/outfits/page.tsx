@@ -283,7 +283,7 @@ export default function OutfitsPage() {
                     <button
                       onClick={handleSave}
                       disabled={!outfitName.trim()}
-                      className="px-3.5 py-1.5 rounded-full bg-[#D98E54] text-white text-xs hover:bg-[#c07d43] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="px-3.5 py-1.5 rounded-full bg-[#A05215] text-white text-xs hover:bg-[#884510] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                       style={{ fontFamily: "var(--font-dm-sans)" }}
                     >
                       {editingId ? "Update" : "Save"}
@@ -317,7 +317,7 @@ export default function OutfitsPage() {
                 <button
                   onClick={handleStartSaving}
                   disabled={totalItems === 0}
-                  className="px-4 py-1.5 rounded-full bg-[#D98E54] text-white text-xs hover:bg-[#c07d43] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="px-4 py-1.5 rounded-full bg-[#A05215] text-white text-xs hover:bg-[#884510] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   style={{ fontFamily: "var(--font-dm-sans)" }}
                 >
                   Save outfit
@@ -386,7 +386,7 @@ function PickerDropdown({
         onClick={() => setOpen((o) => !o)}
         className={`w-full flex items-center justify-between gap-1 px-2 py-1.5 text-xs transition-colors border-b ${
           isFiltered
-            ? "border-[#D98E54] text-[#1E1E1E]"
+            ? "border-[#A05215] text-[#1E1E1E]"
             : "border-[#D8D3CC] text-[#8A847C] hover:text-[#1E1E1E] hover:border-[#B8B3AC]"
         }`}
         style={{ fontFamily: "var(--font-dm-sans)" }}

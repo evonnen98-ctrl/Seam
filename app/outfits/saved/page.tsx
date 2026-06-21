@@ -44,10 +44,10 @@ export default function SavedOutfitsPage() {
         <h1
           className="text-[#1a1a1a] leading-none"
           style={{
-            fontFamily: "var(--font-unbounded)",
-            fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)",
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
+            fontFamily: "var(--font-cormorant)",
+            fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+            fontWeight: 400,
+            letterSpacing: "0.01em",
           }}
         >
           Saved Outfits
@@ -60,7 +60,7 @@ export default function SavedOutfitsPage() {
               className="px-3.5 py-1.5 rounded-full text-[11px] border transition-all"
               style={{
                 fontFamily: "var(--font-dm-sans)",
-                borderColor: activeTag === "all" ? "#D98E54" : "#D8D3CC",
+                borderColor: activeTag === "all" ? "#A05215" : "#D8D3CC",
                 color: activeTag === "all" ? "#1a1a1a" : "#9CA3AF",
               }}
             >
@@ -73,7 +73,7 @@ export default function SavedOutfitsPage() {
                 className="px-3.5 py-1.5 rounded-full text-[11px] border transition-all"
                 style={{
                   fontFamily: "var(--font-dm-sans)",
-                  borderColor: activeTag === tag ? "#D98E54" : "#D8D3CC",
+                  borderColor: activeTag === tag ? "#A05215" : "#D8D3CC",
                   color: activeTag === tag ? "#1a1a1a" : "#9CA3AF",
                 }}
               >
@@ -187,7 +187,7 @@ function OutfitRow({
       style={{
         borderRadius: "20px",
         boxShadow: hovered
-          ? "0 8px 24px rgba(217, 142, 84, 0.12)"
+          ? "0 8px 24px rgba(160, 82, 21, 0.12)"
           : "0 2px 12px rgba(0,0,0,0.05)",
         transform: hovered ? "translateY(-1px)" : "translateY(0)",
         transition: "box-shadow 0.15s ease, transform 0.15s ease",
