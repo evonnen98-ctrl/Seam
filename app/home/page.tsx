@@ -219,7 +219,7 @@ export default function HomePage() {
               <div className="w-full max-w-lg flex flex-col items-center text-center">
 
                 {/* Greeting */}
-                <h1 style={{ opacity: visible ? 1 : 0, transition: "opacity 0.5s ease 0s", fontFamily: "var(--font-cormorant)", fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 300, color: "#1a1a1a", letterSpacing: "0.01em", marginBottom: "0.5rem", lineHeight: 1.2 }}>
+                <h1 style={{ opacity: visible ? 1 : 0, transition: "opacity 0.5s ease 0s", fontFamily: "var(--font-sora)", fontSize: "clamp(1.75rem, 3.5vw, 2.25rem)", fontWeight: 600, color: "#1a1a1a", letterSpacing: "-0.02em", marginBottom: "0.5rem", lineHeight: 1.15 }}>
                   {getGreeting()}
                 </h1>
 
@@ -366,7 +366,7 @@ export default function HomePage() {
                               })}
                             </div>
                           ) : (
-                            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.75rem", color: "#B8B3AC", fontWeight: 300 }}>No items match these filters.</p>
+                            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.75rem", color: "#B8B3AC", fontWeight: 400 }}>No items match these filters.</p>
                           )}
                           {pinnedIds.size > 0 && (
                             <button onClick={() => setPinnedIds(new Set())} className="mt-3 transition-colors"
@@ -399,8 +399,8 @@ export default function HomePage() {
               <div className="flex-1 overflow-y-auto">
                 {emptyWardrobe && !outfitLoading && (
                   <div className="h-full flex flex-col items-center justify-center px-12 text-center gap-4">
-                    <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.4rem", fontWeight: 400, fontStyle: "italic", color: "#8A847C" }}>Your wardrobe is empty.</p>
-                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#B8B3AC", fontWeight: 300 }}>Add some pieces first and My Drobe will dress you.</p>
+                    <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.95rem", fontWeight: 500, color: "#8A847C" }}>Your wardrobe is empty.</p>
+                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#B8B3AC", fontWeight: 400 }}>Add some pieces first and My Drobe will dress you.</p>
                     <Link href="/onboarding" className="mt-1 px-5 py-2.5 rounded-full text-sm bg-[#A05215] text-white hover:bg-[#884510] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
                       Add to wardrobe
                     </Link>
@@ -408,15 +408,15 @@ export default function HomePage() {
                 )}
                 {!emptyWardrobe && !outfitLoading && !result && !outfitError && (
                   <div className="h-full flex items-center justify-center px-16">
-                    <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 400, fontStyle: "italic", color: "#C8C3BC", textAlign: "center", lineHeight: 1.55 }}>
+                    <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.85rem", fontWeight: 400, color: "#C8C3BC", textAlign: "center", lineHeight: 1.6 }}>
                       Tell us what you&apos;re dressing for and we&apos;ll put something together.
                     </p>
                   </div>
                 )}
                 {!outfitLoading && outfitError && (
                   <div className="h-full flex flex-col items-center justify-center px-12 gap-3">
-                    <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.25rem", fontStyle: "italic", color: "#8A847C" }}>Something went wrong.</p>
-                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", color: "#B8B3AC", fontWeight: 300 }}>{outfitError}</p>
+                    <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.9rem", fontWeight: 500, color: "#8A847C" }}>Something went wrong.</p>
+                    <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.8rem", color: "#B8B3AC", fontWeight: 400 }}>{outfitError}</p>
                   </div>
                 )}
                 {outfitLoading && (
@@ -424,7 +424,7 @@ export default function HomePage() {
                     <div className="flex gap-1.5">
                       {[0,1,2].map(i => <span key={i} className="w-1.5 h-1.5 rounded-full bg-[#1E1E1E] opacity-25 animate-bounce" style={{ animationDelay: `${i*0.15}s` }} />)}
                     </div>
-                    <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.25rem", fontWeight: 400, fontStyle: "italic", color: "#8A847C" }}>Putting your outfit together…</p>
+                    <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.85rem", fontWeight: 400, color: "#8A847C" }}>Putting your outfit together…</p>
                   </div>
                 )}
                 {result && !outfitLoading && (
@@ -448,7 +448,7 @@ export default function HomePage() {
                         {result.note.split("\n").map(l => l.replace(/^•\s*/,"").trim()).filter(Boolean).map((line, i) => (
                           <li key={i} className="flex items-start gap-2.5">
                             <span style={{ color: "#C8C3BC", lineHeight: "1.6", flexShrink: 0 }}>—</span>
-                            <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#3A3530", lineHeight: 1.6, fontWeight: 300 }}>{line}</span>
+                            <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.85rem", color: "#3A3530", lineHeight: 1.6, fontWeight: 400 }}>{line}</span>
                           </li>
                         ))}
                       </ul>
@@ -461,7 +461,7 @@ export default function HomePage() {
                     </button>
                     <div className="mt-5">
                       {currentFeedback === "love"
-                        ? <p className="text-xs text-[#B8B3AC]" style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}>Noted — we&apos;ll keep this in mind</p>
+                        ? <p className="text-xs text-[#B8B3AC]" style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400 }}>Noted — we&apos;ll keep this in mind</p>
                         : currentFeedback === null
                           ? <div className="flex items-center gap-5">
                               <button onClick={() => handleFeedback("love")} className="flex items-center gap-1.5 text-xs text-[#C8C3BC] hover:text-[#8A847C] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>
@@ -644,10 +644,10 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
       <div className="mb-8">
         {!result && !loading && (
           <>
-            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.5rem, 2.5vw, 2rem)", fontWeight: 400, fontStyle: "italic", color: "#1E1E1E", letterSpacing: "-0.01em", marginBottom: "0.4rem" }}>
+            <p style={{ fontFamily: "var(--font-sora)", fontSize: "clamp(1.1rem, 2vw, 1.35rem)", fontWeight: 600, color: "#1E1E1E", letterSpacing: "-0.02em", marginBottom: "0.4rem" }}>
               Paste a link, get a verdict.
             </p>
-            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", color: "#B8B3AC", fontWeight: 300, marginBottom: "1.5rem" }}>
+            <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.8rem", color: "#B8B3AC", fontWeight: 400, marginBottom: "1.5rem" }}>
               My Drobe will check it against your wardrobe and tell you if it&apos;s worth it.
             </p>
           </>
@@ -683,11 +683,11 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
 
         {error && (
           <div style={{ marginTop: "0.6rem" }}>
-            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#A0742A", fontWeight: 300 }}>{error}</p>
+            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#A0742A", fontWeight: 400 }}>{error}</p>
             {!manualMode && (
               <button
                 onClick={() => setManualMode(true)}
-                style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#8A847C", fontWeight: 300, marginTop: "0.4rem", textDecoration: "underline", cursor: "pointer", background: "none", border: "none", padding: 0 }}
+                style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.78rem", color: "#8A847C", fontWeight: 400, marginTop: "0.4rem", textDecoration: "underline", cursor: "pointer", background: "none", border: "none", padding: 0 }}
               >
                 Enter details manually instead →
               </button>
@@ -698,7 +698,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
         {/* Manual fallback form */}
         {manualMode && !result && (
           <div style={{ marginTop: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#3A3530", fontWeight: 300 }}>Enter the product details:</p>
+            <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#3A3530", fontWeight: 400 }}>Enter the product details:</p>
             <input
               type="text"
               value={manualName}
@@ -736,7 +736,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
           <div className="flex gap-1.5">
             {[0,1,2].map(i => <span key={i} className="w-1.5 h-1.5 rounded-full bg-[#1E1E1E] opacity-25 animate-bounce" style={{ animationDelay: `${i*0.15}s` }} />)}
           </div>
-          <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.1rem", fontStyle: "italic", color: "#8A847C" }}>
+          <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.85rem", fontWeight: 400, color: "#8A847C" }}>
             Checking your wardrobe…
           </p>
         </div>
@@ -772,11 +772,11 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
               {/* Product name + brand + link */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.45rem", fontWeight: 400, fontStyle: "italic", color: "#1E1E1E", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
+                  <p style={{ fontFamily: "var(--font-sora)", fontSize: "1rem", fontWeight: 600, color: "#1E1E1E", letterSpacing: "-0.02em", lineHeight: 1.3 }}>
                     {product.name}
                   </p>
                   {product.brand && (
-                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.72rem", color: "#8A847C", fontWeight: 300, marginTop: "0.2rem" }}>{product.brand}</p>
+                    <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.72rem", color: "#8A847C", fontWeight: 400, marginTop: "0.2rem" }}>{product.brand}</p>
                   )}
                 </div>
                 <a href={product.url} target="_blank" rel="noopener noreferrer"
@@ -805,7 +805,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
                 {result.reasons.map((reason, i) => (
                   <li key={i} className="flex items-start gap-2.5">
                     <span style={{ color: "#C8C3BC", lineHeight: "1.65", flexShrink: 0, fontSize: "0.8rem" }}>—</span>
-                    <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#3A3530", lineHeight: 1.65, fontWeight: 300 }}>{reason}</span>
+                    <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.82rem", color: "#3A3530", lineHeight: 1.65, fontWeight: 400 }}>{reason}</span>
                   </li>
                 ))}
               </ul>
@@ -854,7 +854,7 @@ function BuyPanel({ wardrobe }: { wardrobe: WardrobeItem[] }) {
                   </div>
                 ) : (
                   <div className="flex items-center justify-between">
-                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", color: "#8A847C", fontWeight: 300 }}>
+                    <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.8rem", color: "#8A847C", fontWeight: 400 }}>
                       Added to {added === "wardrobe" ? "your wardrobe" : "your wishlist"}.
                     </p>
                     <button onClick={reset} className="text-xs text-[#C8C3BC] hover:text-[#8A847C] transition-colors" style={{ fontFamily: "var(--font-dm-sans)" }}>

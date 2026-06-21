@@ -8,6 +8,9 @@
   --muted: #8A847C;
   --border: #E2DDD6;
   --accent: #A05215;
+  /* Both legacy variables now point at Sora so all existing inline styles work unchanged */
+  --font-cormorant: var(--font-sora);
+  --font-dm-sans: var(--font-sora);
 }
 
 @theme inline {
@@ -18,8 +21,8 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  --font-heading: var(--font-cormorant);
-  --font-body: var(--font-dm-sans);
+  /* Override Tailwind v4's --font-sans so font-sans utility and the * reset use Sora */
+  --font-sans: var(--font-sora);
 }
 
 .item-card:hover .item-card-thumb {
@@ -32,7 +35,7 @@ html {
 }
 
 body {
-  font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+  font-family: var(--font-sora), sans-serif;
   background: var(--cream);
   color: var(--charcoal);
   -webkit-font-smoothing: antialiased;

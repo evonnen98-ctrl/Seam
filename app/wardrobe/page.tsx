@@ -248,10 +248,10 @@ export default function WardrobePage() {
           <h1
             className="text-[#1E1E1E] leading-none mb-1"
             style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
-              fontWeight: 400,
-              letterSpacing: "0.01em",
+              fontFamily: "var(--font-sora)",
+              fontSize: "clamp(1.25rem, 2vw, 1.5rem)",
+              fontWeight: 600,
+              letterSpacing: "-0.02em",
             }}
           >
             {tab === "wardrobe" ? "Wardrobe" : "Wishlist"}
@@ -331,10 +331,10 @@ export default function WardrobePage() {
             <Sparkles size={20} className="text-[#8A847C]" />
           </div>
           <div>
-            <p className="text-[#1E1E1E] mb-2" style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.5rem", fontWeight: 400, fontStyle: "italic" }}>
+            <p className="text-[#1E1E1E] mb-2" style={{ fontFamily: "var(--font-sora)", fontSize: "1rem", fontWeight: 600 }}>
               {tab === "wardrobe" ? "Your wardrobe is empty." : "Your wishlist is empty."}
             </p>
-            <p className="text-[#8A847C] text-sm mb-6" style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}>
+            <p className="text-[#8A847C] text-sm mb-6" style={{ fontFamily: "var(--font-sora)", fontWeight: 400 }}>
               Add a few pieces to get started.
             </p>
             <button
@@ -411,7 +411,7 @@ export default function WardrobePage() {
                         ? "bg-[#1E1E1E] text-[#FAF8F4] rounded-br-sm"
                         : "bg-[#F0EBE3] text-[#1E1E1E] rounded-bl-sm"
                     }`}
-                    style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}
+                    style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400 }}
                   >
                     {msg.text === "" && isStreaming_ ? (
                       /* Typing indicator — three pulsing dots */
@@ -571,7 +571,7 @@ function EditModal({
           <div className="flex items-baseline gap-3">
             <h2
               className="text-[#1E1E1E]"
-              style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.35rem", fontWeight: 400, fontStyle: "italic" }}
+              style={{ fontFamily: "var(--font-sora)", fontSize: "0.95rem", fontWeight: 600 }}
             >
               Edit piece
             </h2>
@@ -745,7 +745,7 @@ function EditModal({
                     <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "0.6rem", letterSpacing: "0.1em", color: "#B8B3AC", textTransform: "uppercase", marginBottom: "0.25rem" }}>
                       {label}
                     </p>
-                    <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.15rem", fontWeight: 400, color: "#1E1E1E", lineHeight: 1.2 }}>
+                    <p style={{ fontFamily: "var(--font-sora)", fontSize: "0.85rem", fontWeight: 500, color: "#1E1E1E", lineHeight: 1.3 }}>
                       {value}
                     </p>
                   </div>
@@ -911,7 +911,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
       </p>
       <p
         className="text-[#3A3530] leading-none"
-        style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.05rem", fontWeight: 400 }}
+        style={{ fontFamily: "var(--font-sora)", fontSize: "0.85rem", fontWeight: 500 }}
       >
         {value}
       </p>

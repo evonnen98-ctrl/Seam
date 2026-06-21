@@ -44,10 +44,10 @@ export default function SavedOutfitsPage() {
         <h1
           className="text-[#1a1a1a] leading-none"
           style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
-            fontWeight: 400,
-            letterSpacing: "0.01em",
+            fontFamily: "var(--font-sora)",
+            fontSize: "clamp(1.25rem, 2vw, 1.5rem)",
+            fontWeight: 600,
+            letterSpacing: "-0.02em",
           }}
         >
           Saved Outfits

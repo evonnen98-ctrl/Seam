@@ -237,7 +237,7 @@ export default function OutfitsPage() {
               {pickerItems.length === 0 && (
                 <p
                   className="col-span-2 text-xs text-[#C8B89A] pt-1"
-                  style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}
+                  style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400 }}
                 >
                   {allItems.length === 0 ? "Add items first." : "No items here."}
                 </p>
@@ -253,7 +253,7 @@ export default function OutfitsPage() {
           <div className="shrink-0 px-6 py-3 flex items-center justify-between gap-4 border-b border-[#E2DDD6]">
             <p
               className="text-xs text-[#C8B89A]"
-              style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 300, fontStyle: "italic" }}
+              style={{ fontFamily: "var(--font-sora)", fontWeight: 400 }}
             >
               Drag pieces into each section to build your outfit.
             </p>
@@ -504,10 +504,9 @@ function DropZone({
       <div className="shrink-0 px-5 pt-4 pb-2 flex items-baseline gap-2.5">
         <p
           style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "1.05rem",
-            fontWeight: 400,
-            fontStyle: "italic",
+            fontFamily: "var(--font-sora)",
+            fontSize: "0.85rem",
+            fontWeight: 600,
             color: "#1E1E1E",
             lineHeight: 1,
           }}
@@ -530,7 +529,7 @@ function DropZone({
         {items.length === 0 ? (
           <p
             className="text-[11px] select-none"
-            style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, fontStyle: "italic", color: accent, opacity: 0.5 }}
+            style={{ fontFamily: "var(--font-sora)", fontWeight: 400, color: accent, opacity: 0.5 }}
           >
             Drop items here
           </p>
