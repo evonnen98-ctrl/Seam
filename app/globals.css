@@ -8,9 +8,10 @@
   --muted: #8A847C;
   --border: #E2DDD6;
   --accent: #A05215;
-  /* Both legacy variables now point at Sora so all existing inline styles work unchanged */
-  --font-cormorant: var(--font-sora);
-  --font-dm-sans: var(--font-sora);
+  /* All legacy font variables forward to Inter — no component files need changing */
+  --font-cormorant: var(--font-inter);
+  --font-dm-sans: var(--font-inter);
+  --font-sora: var(--font-inter);
 }
 
 @theme inline {
@@ -21,8 +22,8 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  /* Override Tailwind v4's --font-sans so font-sans utility and the * reset use Sora */
-  --font-sans: var(--font-sora);
+  /* Override Tailwind v4's --font-sans so font-sans utility and the * reset use Inter */
+  --font-sans: var(--font-inter);
 }
 
 .item-card:hover .item-card-thumb {
@@ -35,7 +36,7 @@ html {
 }
 
 body {
-  font-family: var(--font-sora), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   background: var(--cream);
   color: var(--charcoal);
   -webkit-font-smoothing: antialiased;
