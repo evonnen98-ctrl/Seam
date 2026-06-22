@@ -219,7 +219,7 @@ export default function HomePage() {
               <div className="w-full max-w-lg flex flex-col items-center text-center">
 
                 {/* Greeting */}
-                <h1 style={{ opacity: visible ? 1 : 0, transition: "opacity 0.5s ease 0s", fontFamily: "var(--font-sora)", fontSize: "clamp(2.625rem, 5.25vw, 3.375rem)", fontWeight: 600, color: "#1a1a1a", letterSpacing: "-0.02em", marginBottom: "0.5rem", lineHeight: 1.15 }}>
+                <h1 style={{ opacity: visible ? 1 : 0, transition: "opacity 0.5s ease 0s", fontFamily: "var(--font-sora)", fontSize: "clamp(3.9375rem, 7.875vw, 5.0625rem)", fontWeight: 600, color: "#1a1a1a", letterSpacing: "-0.02em", marginBottom: "0.5rem", lineHeight: 1.15 }}>
                   {getGreeting()}
                 </h1>
 
