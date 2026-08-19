@@ -20,6 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap"
+        />
+      </head>
       <body className="min-h-screen">{children}</body>
     </html>
   );
