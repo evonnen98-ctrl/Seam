@@ -123,6 +123,9 @@ export default function WardrobePage() {
     }
     load();
     setCurrency(loadCurrencyPreference());
+    if (new URLSearchParams(window.location.search).get("tab") === "wishlist") {
+      setTab("wishlist");
+    }
   }, []);
 
   const activeItems = tab === "wardrobe" ? items : wishlist;

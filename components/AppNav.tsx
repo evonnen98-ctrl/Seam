@@ -8,7 +8,7 @@ export type ActivePage = "home" | "wardrobe" | "wishlist" | "build" | "saved";
 const TABS: { id: ActivePage; label: string; href: string }[] = [
   { id: "home",     label: "Home",         href: "/home" },
   { id: "wardrobe", label: "Wardrobe",      href: "/wardrobe" },
-  { id: "wishlist", label: "Wishlist",      href: "/wardrobe" },
+  { id: "wishlist", label: "Wishlist",      href: "/wardrobe?tab=wishlist" },
   { id: "build",    label: "Build",         href: "/outfits" },
   { id: "saved",    label: "Saved Outfits", href: "/outfits/saved" },
 ];
