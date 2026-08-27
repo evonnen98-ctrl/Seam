@@ -14,8 +14,9 @@ export const CURRENCY_SYMBOL: Record<string, string> = {
   CAD: "CA$", CHF: "CHF", JPY: "¥", SEK: "kr", DKK: "kr", NOK: "kr",
 };
 
-// Approximate fixed rates: 1 USD = X [currency]
-export const RATES_FROM_USD: Record<string, number> = {
+// Safety-net rates used until the first live fetch resolves, and whenever the
+// live fetch fails. 1 USD = X [currency].
+const FALLBACK_RATES_FROM_USD: Record<string, number> = {
   USD: 1.00,
   AUD: 1.55,
   GBP: 0.79,
@@ -29,15 +30,49 @@ export const RATES_FROM_USD: Record<string, number> = {
   NOK: 10.5,
 };
 
+const RATE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const FRANKFURTER_SYMBOLS = Object.keys(FALLBACK_RATES_FROM_USD)
+  .filter((code) => code !== "USD")
+  .join(",");
+const FRANKFURTER_URL = `https://api.frankfurter.dev/v1/latest?base=USD&symbols=${FRANKFURTER_SYMBOLS}`;
+
+let ratesCache: Record<string, number> = { ...FALLBACK_RATES_FROM_USD };
+let lastFetchAttemptAt = 0;
+let pendingFetch: Promise<void> | null = null;
+
+// Kicks off a background refresh when the cache is stale. Never awaited by
+// callers — toUSD/fromUSD stay synchronous and just read whatever is cached.
+function refreshRatesIfStale(): void {
+  if (Date.now() - lastFetchAttemptAt < RATE_CACHE_TTL_MS || pendingFetch) return;
+
+  pendingFetch = fetch(FRANKFURTER_URL)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Frankfurter API responded ${res.status}`);
+      return res.json() as Promise<{ rates: Record<string, number> }>;
+    })
+    .then(({ rates }) => {
+      ratesCache = { USD: 1.00, ...rates };
+    })
+    .catch((err) => {
+      console.error("Failed to fetch live exchange rates, using fallback rates:", err);
+    })
+    .finally(() => {
+      lastFetchAttemptAt = Date.now();
+      pendingFetch = null;
+    });
+}
+
 // Convert an amount from a given currency to USD
 export function toUSD(amount: number, fromCurrency: string): number {
-  const rate = RATES_FROM_USD[fromCurrency] ?? 1;
+  refreshRatesIfStale();
+  const rate = ratesCache[fromCurrency] ?? 1;
   return amount / rate;
 }
 
 // Convert a USD amount to a target currency
 export function fromUSD(usdAmount: number, toCurrency: string): number {
-  const rate = RATES_FROM_USD[toCurrency] ?? 1;
+  refreshRatesIfStale();
+  const rate = ratesCache[toCurrency] ?? 1;
   return usdAmount * rate;
 }
 
