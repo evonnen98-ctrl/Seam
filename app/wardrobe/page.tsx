@@ -241,8 +241,16 @@ export default function WardrobePage() {
     <main className="min-h-screen flex flex-col pb-32" style={{ background: getBackgroundByTime() }}>
       <AppNav
         activePage={tab === "wardrobe" ? "wardrobe" : "wishlist"}
-        onWardrobeClick={() => { setTab("wardrobe"); setActiveCategory(null); }}
-        onWishlistClick={() => { setTab("wishlist"); setActiveCategory(null); }}
+        onWardrobeClick={() => {
+          setTab("wardrobe");
+          setActiveCategory(null);
+          window.history.replaceState(null, "", "/wardrobe");
+        }}
+        onWishlistClick={() => {
+          setTab("wishlist");
+          setActiveCategory(null);
+          window.history.replaceState(null, "", "/wardrobe?tab=wishlist");
+        }}
       />
 
       {/* Header */}
