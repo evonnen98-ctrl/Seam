@@ -8,7 +8,8 @@
   --muted: #8A847C;
   --border: #E2DDD6;
   --accent: #A05215;
-  /* All legacy font variables forward to Inter — no component files need changing */
+  --font-inter: "General Sans", sans-serif;
+  /* All legacy font variables forward to General Sans — no component files need changing */
   --font-cormorant: var(--font-inter);
   --font-dm-sans: var(--font-inter);
   --font-sora: var(--font-inter);
@@ -22,7 +23,7 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  /* Override Tailwind v4's --font-sans so font-sans utility and the * reset use Inter */
+  /* Override Tailwind v4's --font-sans so font-sans utility and the * reset use General Sans */
   --font-sans: var(--font-inter);
 }
 

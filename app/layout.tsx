@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "900"],
-});
 
 export const metadata: Metadata = {
   title: "My Drobe — Your wardrobe, understood.",
@@ -19,11 +12,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <head>
+        {/*
+          Fontshare's v2 CSS endpoint only returns @font-face rules for the
+          first f[] font in the query string — a single combined link silently
+          drops every font after the first, so each family needs its own link.
+        */}
         <link
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap"
+        />
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap"
         />
       </head>
       <body className="min-h-screen">{children}</body>
